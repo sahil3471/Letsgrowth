@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Triloka — A Puranic Simulation of Vedic Cosmology</title>
+  <meta name="description" content="An interactive simulation of the cosmology of Srimad Bhagavatam's Fifth Canto — the Triloka, the fourteen worlds, and the great Earth circle of Bhu-mandala." />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Animated starfield backdrop -->
+  <canvas id="starfield"></canvas>
+
+  <!-- Intro overlay -->
+  <div id="intro">
+    <div class="halo"></div>
+    <h1>TRILOKA</h1>
+    <div class="sub">The Three Worlds &amp; the Fourteen Planetary Systems</div>
+    <p class="desc">
+      A simulation of the universe exactly as described by Sukadeva Goswami in the
+      Fifth Canto of the <em>Srimad Bhagavatam</em> — the great Earth circle of Bhu-mandala,
+      golden Mount Meru at the axis of creation, the wheel of luminaries, and the
+      fourteen worlds rising and descending within the cosmic egg. No modern model;
+      only the Puranic vision.
+    </p>
+    <button class="enter" id="enterBtn">Enter the Cosmos</button>
+    <div class="footnote">Measurements in yojanas (1 yojana = 8 miles), per Srimad Bhagavatam, Canto 5</div>
+  </div>
+
+  <!-- Main application -->
+  <div id="app">
+    <div class="brand">
+      <span class="mark"></span>
+      <h1>Triloka<small>Vedic Cosmology</small></h1>
+    </div>
+
+    <div class="topbar">
+      <div class="epigraph" id="epigraph"></div>
+      <div class="controls">
+        <button class="toggle active" id="animToggle">&#9646;&#9646; Motion</button>
+        <button class="toggle" id="labelToggle">Labels</button>
+      </div>
+    </div>
+
+    <nav id="nav">
+      <div class="nav-label">Views</div>
+      <!-- nav items injected by app.js -->
+    </nav>
+
+    <div class="stage" id="stage">
+      <canvas id="scene"></canvas>
+      <div class="stage-title" id="stageTitle"></div>
+      <div class="hint" id="hint"></div>
+      <div class="scale-readout" id="scaleReadout"></div>
+    </div>
+
+    <aside class="info" id="info">
+      <div class="placeholder">Hover or tap any region of the cosmos to read its description from the scripture.</div>
+    </aside>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <!-- Plain scripts (no modules) for file:// compatibility -->
+  <script src="js/data.js"></script>
+  <script src="js/starfield.js"></script>
+  <script src="js/triloka.js"></script>
+  <script src="js/bhumandala.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
