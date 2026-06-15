@@ -221,7 +221,9 @@
       if (!info && !pinned) renderInfo(null);
     }
 
-    scaleReadout.textContent = "1 yojana = 8 miles   ·   scale: schematic";
+    scaleReadout.textContent =
+      "1 yojana = 8 miles · scale schematic · Bhu-mandala \u2300 " +
+      BHUMANDALA_DIAMETER_YOJANAS.toLocaleString("en-US") + " yojanas";
     requestAnimationFrame(loop);
   }
 

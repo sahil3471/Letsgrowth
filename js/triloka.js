@@ -11,6 +11,7 @@
    ===================================================================== */
 
 window.TrilokaView = (function () {
+  const GFX = window.GFX;
   const HW = 300;            // half-width of the world column (world units)
   let bands = [];            // ordered band layout
   let total = 0;             // total world height
@@ -110,20 +111,31 @@ window.TrilokaView = (function () {
     ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
   }
 
+  function bandKind(lk, key) {
+    if (key === "svar") return "space";
+    if (key === "bhuvar") return "sky";
+    if (key === "bhu") return "earth";
+    if (key === "garbhodaka") return "liquid";
+    if (lk.group === "upper") return "cloud";
+    return "rock";
+  }
+
   function draw(ctx, e, t) {
     env = e;
     regions = [];
     const w = e.w, h = e.h;
     ctx.clearRect(0, 0, w, h);
 
-    // soft inner glow of the egg
     const cx = sx(0), cy = sy(total / 2);
     const ry = (total / 2) * 1.05 * cam.scale;
-    const g = ctx.createRadialGradient(cx, cy, 10, cx, cy, ry * 1.1);
-    g.addColorStop(0, "rgba(40,30,60,0.55)");
-    g.addColorStop(1, "rgba(8,6,16,0)");
-    ctx.fillStyle = g;
-    eggPath(ctx); ctx.fill();
+    const rx = HW * 1.22 * cam.scale;
+
+    // deep interior atmosphere of the cosmic egg
+    const g = ctx.createRadialGradient(cx, cy - ry * 0.2, 10, cx, cy, ry * 1.15);
+    g.addColorStop(0, "rgba(46,34,72,0.6)");
+    g.addColorStop(0.6, "rgba(20,14,34,0.5)");
+    g.addColorStop(1, "rgba(6,5,14,0)");
+    ctx.fillStyle = g; eggPath(ctx); ctx.fill();
 
     // clip everything to the egg
     ctx.save();
@@ -131,124 +143,193 @@ window.TrilokaView = (function () {
 
     const left = sx(-HW), right = sx(HW), bw = right - left;
 
-    // bands
     for (const b of bands) {
       const y0 = sy(b.y0), y1 = sy(b.y1);
-      if (y1 < -40 || y0 > h + 40) continue;
-      const lk = b.loka;
+      if (y1 < -60 || y0 > h + 60) continue;
+      const lk = b.loka, kind = bandKind(lk, b.key);
+      const a0 = kind === "space" ? 0.04 : 0.16, a1 = kind === "space" ? 0.10 : 0.34;
       const grad = ctx.createLinearGradient(0, y0, 0, y1);
-      grad.addColorStop(0, hexA(lk.color, b.key === "svar" ? 0.05 : 0.14));
-      grad.addColorStop(0.5, hexA(lk.color, b.key === "svar" ? 0.12 : 0.30));
-      grad.addColorStop(1, hexA(lk.color, b.key === "svar" ? 0.05 : 0.14));
-      ctx.fillStyle = grad;
-      ctx.fillRect(left, y0, bw, y1 - y0);
+      grad.addColorStop(0, hexA(lk.color, a0));
+      grad.addColorStop(0.5, hexA(lk.color, a1));
+      grad.addColorStop(1, hexA(lk.color, a0));
+      ctx.fillStyle = grad; ctx.fillRect(left, y0, bw, y1 - y0);
 
-      // divider line
-      ctx.strokeStyle = "rgba(255,255,255,0.06)";
-      ctx.lineWidth = 1;
+      drawBandTexture(ctx, left, y0, bw, y1 - y0, kind, t);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.05)"; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(left, y0); ctx.lineTo(right, y0); ctx.stroke();
 
       regions.push({ type: "rect", x: left, y: y0, w: bw, h: y1 - y0, info: lokaInfo(lk) });
 
-      // labels
       if (e.showLabels && y1 - y0 > 16) {
-        ctx.fillStyle = b.key === "bhu" ? "#fff4d8" : "rgba(245,236,220,0.92)";
+        ctx.save();
+        ctx.shadowColor = "rgba(0,0,0,0.7)"; ctx.shadowBlur = 6;
+        ctx.fillStyle = b.key === "bhu" ? "#fff4d8" : "rgba(248,240,224,0.95)";
         ctx.font = "600 13px Georgia, 'Times New Roman', serif";
         ctx.textAlign = "left";
         ctx.fillText(lk.name, left + 14, (y0 + y1) / 2 + 4);
+        ctx.restore();
         if (lk.altName) {
-          ctx.fillStyle = "rgba(200,190,170,0.55)";
-          ctx.font = "italic 11px Georgia, serif";
-          ctx.textAlign = "right";
+          ctx.fillStyle = "rgba(210,200,178,0.6)";
+          ctx.font = "italic 11px Georgia, serif"; ctx.textAlign = "right";
           ctx.fillText(lk.altName, right - 12, (y0 + y1) / 2 + 4);
         }
       }
     }
 
-    // the Bhu plane — bright edge-on disc
-    const bhu = bands.find((b) => b.key === "bhu");
-    if (bhu) {
-      const by = sy((bhu.y0 + bhu.y1) / 2);
-      const lg = ctx.createLinearGradient(left, 0, right, 0);
-      lg.addColorStop(0, "rgba(255,200,110,0)");
-      lg.addColorStop(0.5, "rgba(255,214,130,0.95)");
-      lg.addColorStop(1, "rgba(255,200,110,0)");
-      ctx.strokeStyle = lg; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(left, by); ctx.lineTo(right, by); ctx.stroke();
-    }
-
-    // luminaries within Svar
+    drawBhuPlane(ctx, left, right);
     drawLuminaries(ctx, t, e);
-
-    // Mount Meru rising from the Bhu plane through the middle worlds
-    drawMeru(ctx);
+    drawMeru(ctx, t);
 
     ctx.restore(); // unclip
 
-    // egg shell outline
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(255,196,92,0.5)";
-    eggPath(ctx); ctx.stroke();
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = "rgba(255,157,46,0.06)";
-    eggPath(ctx); ctx.stroke();
-
-    // Triloka bracket
+    drawEggShell(ctx, cx, cy, rx, ry);
     drawTrilokaBracket(ctx, e);
-
-    // group labels (upper / lower)
     drawAxisTags(ctx, e);
   }
 
+  function drawBandTexture(ctx, left, y0, bw, hgt, kind, t) {
+    if (kind === "space") return;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(left, y0, bw, hgt); ctx.clip();
+    if (kind === "cloud" || kind === "sky") {
+      const tile = GFX.noiseTile("cloudTile", 220, 4, 5);
+      ctx.globalAlpha = 0.28; ctx.globalCompositeOperation = "overlay";
+      const off = (t * 0.004) % 220;
+      GFX.tile(ctx, tile, left, y0, left + bw, y0 + hgt, env.w, env.h, off, 0);
+    } else if (kind === "rock") {
+      const tile = GFX.noiseTile("rockTile", 160, 7, 5);
+      ctx.globalAlpha = 0.5; ctx.globalCompositeOperation = "multiply";
+      GFX.tile(ctx, tile, left, y0, left + bw, y0 + hgt, env.w, env.h, 0, 0);
+      // serpent-jewel glints in the dark lower worlds
+      ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = 1;
+      for (let i = 0; i < 5; i++) {
+        const gx = left + ((i * 97 + (t * 0.02)) % bw), gy = y0 + (hgt * ((i * 0.37) % 1));
+        GFX.glow(ctx, gx, gy, 6, "#9fe6ff", 0.5);
+      }
+    } else if (kind === "liquid") {
+      const tile = GFX.noiseTile("oceanTile", 160, 10, 4);
+      ctx.globalAlpha = 0.25; ctx.globalCompositeOperation = "overlay";
+      const off = (t * 0.01) % 160;
+      GFX.tile(ctx, tile, left, y0, left + bw, y0 + hgt, env.w, env.h, off, 0);
+    }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+    ctx.restore();
+  }
+
+  function drawBhuPlane(ctx, left, right) {
+    const bhu = bands.find((b) => b.key === "bhu");
+    if (!bhu) return;
+    const by = sy((bhu.y0 + bhu.y1) / 2);
+    // atmospheric haze above & below the plane
+    const haze = ctx.createLinearGradient(0, by - 26, 0, by + 26);
+    haze.addColorStop(0, "rgba(255,200,110,0)");
+    haze.addColorStop(0.5, "rgba(255,210,130,0.22)");
+    haze.addColorStop(1, "rgba(255,200,110,0)");
+    ctx.fillStyle = haze; ctx.fillRect(left, by - 26, right - left, 52);
+    // the bright edge-on disc
+    const lg = ctx.createLinearGradient(left, 0, right, 0);
+    lg.addColorStop(0, "rgba(255,200,110,0)");
+    lg.addColorStop(0.5, "rgba(255,236,180,1)");
+    lg.addColorStop(1, "rgba(255,200,110,0)");
+    ctx.strokeStyle = lg; ctx.lineWidth = 3.5;
+    ctx.beginPath(); ctx.moveTo(left, by); ctx.lineTo(right, by); ctx.stroke();
+    ctx.lineWidth = 1; ctx.strokeStyle = "rgba(255,255,255,0.6)";
+    ctx.beginPath(); ctx.moveTo(left + (right - left) * 0.2, by); ctx.lineTo(left + (right - left) * 0.8, by); ctx.stroke();
+  }
+
+  function drawEggShell(ctx, cx, cy, rx, ry) {
+    // outer bloom
+    ctx.lineWidth = 8; ctx.strokeStyle = "rgba(255,157,46,0.05)";
+    ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+    // glassy rim with a fresnel-like highlight at the top
+    const grad = ctx.createLinearGradient(0, cy - ry, 0, cy + ry);
+    grad.addColorStop(0, "rgba(255,236,190,0.85)");
+    grad.addColorStop(0.5, "rgba(255,196,92,0.35)");
+    grad.addColorStop(1, "rgba(180,120,40,0.5)");
+    ctx.lineWidth = 2; ctx.strokeStyle = grad;
+    ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+    // top specular arc
+    ctx.lineWidth = 2.5; ctx.strokeStyle = "rgba(255,255,255,0.4)";
+    ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, -Math.PI * 0.72, -Math.PI * 0.28); ctx.stroke();
+  }
+
   function drawLuminaries(ctx, t, e) {
+    const sizeF = Math.min(1.5, cam.scale / cam.baseScale + 0.4);
     for (const L of lumis) {
       const wx = Math.sin(t * L.spd + L.ph) * L.amp;
       const x = sx(wx), y = sy(L.wy);
-      const r = L.data.radius * Math.min(1.4, cam.scale / cam.baseScale + 0.4);
-      // glow
-      const gg = ctx.createRadialGradient(x, y, 0, x, y, r * 3.2);
-      gg.addColorStop(0, hexA(L.data.glow, 0.85));
-      gg.addColorStop(1, hexA(L.data.glow, 0));
-      ctx.fillStyle = gg;
-      ctx.beginPath(); ctx.arc(x, y, r * 3.2, 0, Math.PI * 2); ctx.fill();
-      // body
-      const bg = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, 1, x, y, r);
-      bg.addColorStop(0, "#fff");
-      bg.addColorStop(0.4, L.data.color);
-      bg.addColorStop(1, hexA(L.data.color, 0.7));
-      ctx.fillStyle = bg;
-      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      const r = L.data.radius * sizeF;
+      const rd = L.data.render || { type: "rocky" };
 
-      regions.push({ type: "circle", cx: x, cy: y, r: r + 6, info: lumiInfo(L.data) });
+      if (rd.type === "sun") GFX.drawSun(ctx, x, y, r, t);
+      else if (rd.type === "star") GFX.drawStar(ctx, x, y, r, t);
+      else if (rd.type === "cluster") drawCluster(ctx, x, y, r, rd.count, t);
+      else GFX.drawPlanet(ctx, x, y, r, Object.assign({ glow: L.data.glow }, rd));
 
-      if (e.showLabels && cam.scale > cam.baseScale * 0.9) {
-        ctx.fillStyle = "rgba(255,244,216,0.85)";
-        ctx.font = "11px Inter, system-ui, sans-serif";
-        ctx.textAlign = "left";
-        ctx.fillText(L.data.name, x + r + 6, y + 3);
+      regions.push({ type: "circle", cx: x, cy: y, r: r * 1.6 + 6, info: lumiInfo(L.data) });
+
+      if (e.showLabels && cam.scale > cam.baseScale * 0.85) {
+        ctx.save();
+        ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 5;
+        ctx.fillStyle = "rgba(255,246,222,0.92)";
+        ctx.font = "11px Inter, system-ui, sans-serif"; ctx.textAlign = "left";
+        ctx.fillText(L.data.name, x + r * 1.6 + 6, y + 3);
+        ctx.restore();
       }
     }
   }
 
-  function drawMeru(ctx) {
-    // Meru drawn as a slender golden cone rising from Bhu up to Svar region
+  function drawCluster(ctx, x, y, r, count, t) {
+    GFX.glow(ctx, x, y, r * 3, "#cfe6ff", 0.4);
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2 + i * 1.3;
+      const dist = (0.4 + ((i * 0.27) % 1)) * r * 2.2;
+      const px = x + Math.cos(a) * dist, py = y + Math.sin(a) * dist * 0.7;
+      const tw = 0.6 + 0.4 * Math.sin(t * 0.004 + i);
+      GFX.glow(ctx, px, py, 5, "#ffffff", 0.8 * tw);
+      ctx.fillStyle = "rgba(255,255,255," + tw + ")";
+      ctx.beginPath(); ctx.arc(px, py, 1.6, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function drawMeru(ctx, t) {
     const bhu = bands.find((b) => b.key === "bhu");
     const top = svarBand.y0 + svarBand.h * 0.45;
     const y0 = sy(bhu.y0), y1 = sy(top);
-    const baseHalf = 10 * cam.scale, topHalf = 20 * cam.scale;
+    const baseHalf = 9 * cam.scale, topHalf = 19 * cam.scale;
     const cxp = sx(0);
+    // base shadow on the plane
+    GFX.glow(ctx, cxp, y0, topHalf * 1.6, "#000010", 0.5);
+    // metallic gold body, lit from the left
     const grd = ctx.createLinearGradient(cxp - topHalf, 0, cxp + topHalf, 0);
-    grd.addColorStop(0, "rgba(180,120,30,0.85)");
-    grd.addColorStop(0.5, "#ffe08a");
-    grd.addColorStop(1, "rgba(180,120,30,0.85)");
+    grd.addColorStop(0, "#6e4410");
+    grd.addColorStop(0.28, "#c8841f");
+    grd.addColorStop(0.5, "#fff0b8");
+    grd.addColorStop(0.72, "#e0a534");
+    grd.addColorStop(1, "#5e3a0e");
     ctx.fillStyle = grd;
     ctx.beginPath();
-    ctx.moveTo(cxp - baseHalf, y0);
-    ctx.lineTo(cxp + baseHalf, y0);
-    ctx.lineTo(cxp + topHalf, y1);
-    ctx.lineTo(cxp - topHalf, y1);
+    ctx.moveTo(cxp - baseHalf, y0); ctx.lineTo(cxp + baseHalf, y0);
+    ctx.lineTo(cxp + topHalf, y1); ctx.lineTo(cxp - topHalf, y1);
     ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = "rgba(255,240,180,0.5)"; ctx.lineWidth = 1; ctx.stroke();
+    // vertical facet streaks
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cxp - baseHalf, y0); ctx.lineTo(cxp + baseHalf, y0);
+    ctx.lineTo(cxp + topHalf, y1); ctx.lineTo(cxp - topHalf, y1); ctx.closePath(); ctx.clip();
+    for (let i = -3; i <= 3; i++) {
+      ctx.strokeStyle = i % 2 ? "rgba(255,245,200,0.18)" : "rgba(110,68,16,0.22)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(cxp + i * topHalf / 3.5, y1); ctx.lineTo(cxp + i * baseHalf / 3.5, y0); ctx.stroke();
+    }
+    ctx.restore();
+    // summit glow (lotus-cup) + specular
+    GFX.glow(ctx, cxp, y1, topHalf * 1.8, "#ffd66a", 0.6);
+    ctx.strokeStyle = "rgba(255,245,205,0.7)"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cxp - baseHalf, y0); ctx.lineTo(cxp - topHalf, y1);
+    ctx.moveTo(cxp + baseHalf, y0); ctx.lineTo(cxp + topHalf, y1); ctx.stroke();
     regions.push({ type: "rect", x: cxp - topHalf, y: y1, w: topHalf * 2, h: y0 - y1, info: meruInfo() });
   }
 

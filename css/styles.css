@@ -153,6 +153,10 @@ nav {
 .stage {
   grid-area: stage; position: relative; overflow: hidden;
 }
+.stage::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background: radial-gradient(120% 120% at 50% 45%, transparent 52%, rgba(3,2,8,0.55) 100%);
+}
 .stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
 .stage canvas:active { cursor: grabbing; }
 

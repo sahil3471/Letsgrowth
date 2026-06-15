@@ -266,7 +266,7 @@ const OUTER_REALMS = [
   {
     name: "Lokaloka Mountain",
     description:
-      "The colossal mountain ring that divides the lands lit by the sun from the lands of perpetual darkness — the boundary between the visible worlds and the void.",
+      "The colossal circular mountain — about 10,000 yojanas (80,000 miles) in both breadth and height — that walls off the lands lit by the sun from the lands of perpetual darkness. Its name means 'world and no-world'.",
     reference: "SB 5.20.34-38",
   },
   {
@@ -294,13 +294,37 @@ const VARSHAS = [
   { name: "Hiranmaya-varsha", dir: "north", color: "#c9c089", note: "Northern region of golden lustre, where the Lord is worshipped in His tortoise form by Aryama and the Pitas." },
 ];
 
-/* The eight boundary mountains of Jambudvipa */
+/* The eight boundary mountains of Jambudvipa.
+   Each varsha is 9,000 yojanas (72,000 miles) in length (SB 5.16.6);
+   the boundary mountains are about 2,000 yojanas high and wide. */
 const MERU_MOUNTAINS = {
   south: ["Nishadha", "Hemakuta", "Himalaya"],
   north: ["Nila", "Sveta", "Sringavan"],
   west: ["Malyavan"],
   east: ["Gandhamadana"],
 };
+const VARSHA_LENGTH_YOJANAS = 9000;        /* SB 5.16.6 */
+const BOUNDARY_MTN_YOJANAS = 2000;         /* approx height & width */
+
+/* The four cities of the directional demigods on Manasottara Mountain
+   (atop Pushkaradvipa), around which the Sun travels. SB 5.21.7 */
+const MANASOTTARA = {
+  name: "Manasottara Mountain",
+  sunOrbitYojanas: 95100000,               /* SB 5.21.13: 760,800,000 miles */
+  reference: "SB 5.21",
+  cities: [
+    { name: "Devadhani", dir: "east", lord: "Indra, king of heaven" },
+    { name: "Samyamani", dir: "south", lord: "Yamaraja, lord of death" },
+    { name: "Nimlochani", dir: "west", lord: "Varuna, lord of waters" },
+    { name: "Vibhavari", dir: "north", lord: "Chandra (the Moon)" },
+  ],
+  note:
+    "A great ring-mountain atop Pushkaradvipa. The Sun's chariot circles it along a path 95,100,000 yojanas (760,800,000 miles) long, bringing day to one city while it is midnight at the opposite one.",
+};
+
+/* The whole Bhu-mandala disc, per the Puranas */
+const BHUMANDALA_DIAMETER_YOJANAS = 500000000;   /* 4 billion miles */
+const LOKALOKA_YOJANAS = 10000;                  /* breadth and height */
 
 /* Mount Meru itself (Sumeru) — SB 5.16.7 */
 const MERU = {
@@ -333,6 +357,21 @@ const LUMINARIES = [
   { name: "Saptarshi (Seven Sages)", heightYojanas: 2500000, color: "#cfe6ff", glow: "#9cc6ff", radius: 8, reference: "SB 5.22.17", note: "1,100,000 yojanas above Saturn, the seven great sages (Ursa Major) circle the supreme abode of Lord Vishnu, Dhruvaloka." },
   { name: "Dhruvaloka (Pole Star)", heightYojanas: 3800000, color: "#ffffff", glow: "#bfe0ff", radius: 12, reference: "SB 5.23.1", note: "1,300,000 yojanas above the seven sages stands the abode of Dhruva Maharaja — the fixed pivot around which the entire wheel of stars and planets revolves, like oxen treading a central post." },
 ];
+
+/* Rendering hints so each luminary is drawn as a distinct, realistic body */
+const LUMI_RENDER = {
+  "Surya (Sun)": { type: "sun" },
+  "Chandra (Moon)": { type: "moon", light: "#fbfcff", mid: "#c4cad8", dark: "#6c7488", craters: true, seed: 11, tile: "moonTile" },
+  "Nakshatras (Stars)": { type: "cluster", count: 9 },
+  "Shukra (Venus)": { type: "rocky", light: "#fff3d6", mid: "#f0d49a", dark: "#a67e44", tile: "venusTile", texAlpha: 0.3 },
+  "Budha (Mercury)": { type: "rocky", light: "#dfeede", mid: "#a9c4a8", dark: "#5d7a5c", craters: true, seed: 4, tile: "mercTile" },
+  "Mangala (Mars)": { type: "rocky", light: "#ff9a5e", mid: "#d4642f", dark: "#7e3216", craters: true, seed: 7, tile: "marsTile" },
+  "Brihaspati (Jupiter)": { type: "gas", light: "#ffe8b0", mid: "#e8c074", dark: "#9c7330", band: "#d9a85a" },
+  "Shani (Saturn)": { type: "gas", light: "#e6e0c2", mid: "#bcae84", dark: "#73684a", band: "#c9bd8e", rings: true, ringColor: "#cdbd92" },
+  "Saptarshi (Seven Sages)": { type: "cluster", count: 7 },
+  "Dhruvaloka (Pole Star)": { type: "star" },
+};
+LUMINARIES.forEach((l) => { l.render = LUMI_RENDER[l.name] || { type: "rocky" }; });
 
 /* The seven lower worlds begin 70,000 yojanas below the earthly plane,
    each occupying 10,000 yojanas (SB 5.24.7). */
