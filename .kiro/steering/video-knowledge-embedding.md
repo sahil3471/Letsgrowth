@@ -72,3 +72,12 @@ ones.
   million yojanas), `VARNA_BODY`, five new CONCEPTS, and surfaced it in the
   Fourteen-Worlds view (right-side Virata axis, Shishumara wheel, body-part &
   distance facts, varna legend).
+
+- **Video 5 — “Original Creation, Part 5.”** Brahma's penance and the
+  instruction 'tapa' (SB 2.9.6); the origin of the Gayatri given by Sarasvati
+  (Bs 5.24-25); the Lord's three energies (internal / marginal / external);
+  the genesis of Shiva (Shambhu) and Maya as the linga and yoni whose union
+  yields the mahat-tattva (Bs 5.24-25); the holy name being non-different from
+  the Lord; and Narayana resting aloof in yoga-nidra on the Causal waters.
+  Added six CONCEPTS and `THREE_SHAKTIS`; refined the Mahat-tattva node; and
+  surfaced the three energies in the Creation view's legend.

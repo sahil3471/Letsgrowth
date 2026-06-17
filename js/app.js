@@ -145,7 +145,11 @@
         `<div class="divider"></div><div class="eyebrow">Chain of emanation &middot; Video 2</div>` +
         `<div class="legend">${chain}</div>` +
         `<div class="body" style="margin-top:10px;font-size:0.82rem;color:var(--ink-dim)">${np.body} <span style="color:var(--gold)">(${np.ref})</span></div>` +
-        `<div class="body" style="margin-top:10px;font-size:0.8rem;color:var(--ink-faint)">Sources: Video 1 &amp; 2 — &ldquo;Original Creation&rdquo;. New videos extend this automatically.</div>`
+        `<div class="divider"></div><div class="eyebrow">The Lord's three energies &middot; Video 5</div>` +
+        `<div class="legend">` +
+        THREE_SHAKTIS.map((s) => `<span class="chip" title="${s.note}"><i style="background:${s.color}"></i>${s.name} — ${s.alt}</span>`).join("") +
+        `</div>` +
+        `<div class="body" style="margin-top:10px;font-size:0.8rem;color:var(--ink-faint)">Sources: Videos 1, 2 &amp; 5 — &ldquo;Original Creation&rdquo;. New videos extend this automatically.</div>`
       );
     }
     if (v.id === "tattvas") {

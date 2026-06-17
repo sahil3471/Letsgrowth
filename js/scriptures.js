@@ -43,6 +43,13 @@ const SOURCES = [
     covers:
       "The Virata-rupa — the single universe meditated upon as the gigantic body of the Lord (Satyaloka the head, the heavens His chest, outer space His navel, the lower worlds His legs down to the soles); how it differs from the Vishva-rupa of Bhagavad-gita 11; the four social orders arising from that body; the three vyahritis of the Gayatri (Bhur, Bhuvah, Svah); the Shishumara wheel of stars revolving on Dhruva; and the Vaikuntha realms (Dhruvaloka, Shvetadvipa) within the universe.",
   },
+  {
+    id: 5,
+    title: "Original Creation — Part 5",
+    kind: "Hindi lecture (Srimad Bhagavatam 2.9; Brahma-samhita 5)",
+    covers:
+      "Brahma's birth in darkness and the instruction 'tapa' (austerity); his thousand-year penance and the origin of the Gayatri given by Sarasvati; the Lord's three energies (internal, marginal, external); the genesis of Shiva (Shambhu) and Maya as the linga and yoni whose union yields the mahat-tattva; the holy name being non-different from the Lord; and Maha-Vishnu (Narayana) resting aloof in yoga-nidra on the Causal waters.",
+  },
 ];
 const sourceTag = (ids) => ids.map((i) => "Video " + i).join(", ");
 
@@ -66,7 +73,7 @@ const COSMIC_HIERARCHY = [
     alt: "Karanodakasayi Vishnu — on the Causal Ocean",
     realm: "boundary",
     ref: "Brahma-samhita 5.47-48",
-    sources: [1],
+    sources: [1, 5],
     summary:
       "The first purusha-avatar. Reclining upon the Causal Ocean (Karana) in yoga-nidra, He exhales innumerable universes from the pores of His body and withdraws them when He inhales. Each universe is presided over by its own Brahma.",
   },
@@ -303,6 +310,54 @@ const CONCEPTS = [
     body:
       "Even within the material egg there are transcendental abodes — Dhruvaloka and Shvetadvipa, on the shore of the Ocean of Milk, where Kshirodakasayi Vishnu rests. When the demigods are in distress they come to its shore to petition the Lord.",
   },
+  {
+    key: "brahma-tapas",
+    title: "Brahma's penance — the instruction 'tapa'",
+    ref: "SB 2.9.6",
+    sources: [5],
+    body:
+      "Born on the lotus into darkness and unsure of his task, Brahma heard two syllables — 'ta' and 'pa' (tapa, austerity) — spoken by the Lord. Austerity is the foundation of all creation; nothing is made or sustained without it. Brahma then meditated for a thousand celestial years before creating. In this age that austerity means following four principles — no meat-eating, intoxication, gambling or illicit sex — and chanting the holy names.",
+  },
+  {
+    key: "gayatri-origin",
+    title: "The origin of the Gayatri",
+    ref: "Brahma-samhita 5.24-25; SB 2.9",
+    sources: [5],
+    body:
+      "Seeing Brahma bewildered in the dark, the goddess of learning, Sarasvati, gave him a seed-mantra glorifying Krishna — Govinda, beloved of the gopis — and told him to perform austerity with it. From this the Gayatri is said to arise: the sound through which Brahma received the power and knowledge to create.",
+  },
+  {
+    key: "three-shaktis",
+    title: "The Lord's three energies",
+    ref: "Vishnu Purana 6.7.61; CC Madhya 6.154",
+    sources: [5],
+    body:
+      "The Supreme acts through three potencies: the internal (antaranga) spiritual energy — His own pleasure potency (Radha, Sita, Lakshmi); the marginal (tatastha) energy — the countless living beings, who may turn either way; and the external (bahiranga) energy — maya, the illusory power governing the material world.",
+  },
+  {
+    key: "shambhu-maya",
+    title: "Shiva and Maya — the linga and the yoni",
+    ref: "Brahma-samhita 5.24-25",
+    sources: [5],
+    body:
+      "Desiring to create, the Lord glances upon His internal potency Rama; from this Lord Shambhu (Shiva) appears as the masculine principle (linga) and Maya as the feminine (yoni). Their union yields the mahat-tattva, the substance of the material world. The Shiva-linga is thus the emblem of purusha and prakriti — consciousness merging with matter — not a crude image. Shiva later acts as Rudra in dissolution, yet only Vishnu grants liberation.",
+  },
+  {
+    key: "nama-nami",
+    title: "The holy name is the Lord Himself",
+    ref: "Padma Purana; CC Madhya 17.133",
+    sources: [5],
+    body:
+      "The sound of the Lord's name is non-different from the Lord (abhinnatvan nama-naminoh). The chanting itself purifies the heart: one need not strain the mind or reason, but simply sound the names and hear them, letting the vibration act like medicine entering within.",
+  },
+  {
+    key: "vishnu-aloof",
+    title: "Narayana, aloof in yoga-nidra",
+    ref: "Brahma-samhita 5.47-48; SB 2.9",
+    sources: [5],
+    body:
+      "He who lies upon the Causal waters (nara) is called Narayana. Maha-Vishnu rests there in yoga-nidra, casting only His glance upon the material energy and remaining aloof — as a king builds a prison yet has no wish to live in it. The material world exists for the souls who wish to enjoy apart from Him, and as the path back for those who would return.",
+  },
 ];
 
 /* ---- macro time figures referenced above ---- */
@@ -319,7 +374,7 @@ const MACRO_TIME = {
 const TATTVA_EMANATION = [
   { name: "Vasudeva", sanskrit: "Sri Krishna", note: "The Supreme Person — the origin of all energies and ingredients.", ref: "SB 2.5.14", sources: [2] },
   { name: "Brahma-jyoti", sanskrit: "sva-rocisha", note: "The Lord's own self-effulgence. Many yogis reach only this impersonal radiance and stop, never reaching the Person who is its source.", ref: "Bs 5.40; BG 14.27", sources: [2] },
-  { name: "Mahat-tattva", sanskrit: "the total material energy", note: "The reservoir of matter, set in motion by the Lord's glance through His shadow energy (Maya / Durga), who herself feels shame before Him.", ref: "SB 2.5.22; Bs 5.44", sources: [2] },
+  { name: "Mahat-tattva", sanskrit: "the total material energy", note: "The reservoir of matter, produced from the union of Shambhu (the linga) and Maya (the yoni) when the Lord casts His glance — the principle from which time, ego and all the elements unfold.", ref: "SB 2.5.22; Bs 5.24-25", sources: [2, 5] },
   { name: "Jiva", sanskrit: "the living entities", note: "Eternal sparks of the Lord, never themselves the controller, who act within the elements and time.", ref: "SB 2.5.14", sources: [2] },
   { name: "Pancha-mahabhuta", sanskrit: "the five gross elements", note: "Earth, water, fire, air and ether — the substance (dravya) the soul experiences.", ref: "SB 2.5.25-26", sources: [2] },
   { name: "Karma", sanskrit: "action / interaction", note: "The activity (kriya) of the living entity among the elements.", ref: "SB 2.5.14", sources: [2] },
@@ -376,6 +431,13 @@ const VARNA_BODY = [
   { part: "Arms", order: "Kshatriyas", role: "rulers & protectors" },
   { part: "Thighs & waist", order: "Vaishyas", role: "farmers & merchants" },
   { part: "Legs & feet", order: "Shudras", role: "artisans & laborers" },
+];
+
+/* The Lord's three energies (Video 5). */
+const THREE_SHAKTIS = [
+  { name: "Antaranga", alt: "internal — spiritual", color: "#ffd980", note: "The Lord's own pleasure potency (Radha, Sita, Lakshmi)." },
+  { name: "Tatastha", alt: "marginal — the souls", color: "#9ad7c0", note: "The countless living beings, who may turn toward spirit or matter." },
+  { name: "Bahiranga", alt: "external — maya", color: "#9a8bc0", note: "The illusory energy that governs the material world." },
 ];
 
 /* helper for nicely formatted big numbers */
