@@ -138,66 +138,101 @@ window.TrilokaView = (function () {
     ctx.clearRect(0, 0, w, h);
 
     const cx = sx(0), cy = sy(total / 2);
-    const ry = (total / 2) * 1.05 * cam.scale;
+    const ry = (total / 2) * cam.scale;
 
-    // deep interior atmosphere of the cosmic egg
-    const g = ctx.createRadialGradient(cx, cy - ry * 0.2, 10, cx, cy, ry * 1.15);
-    g.addColorStop(0, "rgba(46,34,72,0.6)");
-    g.addColorStop(0.6, "rgba(20,14,34,0.5)");
+    // soft column aura (no bordered shape around the worlds)
+    const g = ctx.createRadialGradient(cx, cy, 10, cx, cy, Math.max(ry * 1.1, HW * cam.scale * 1.5));
+    g.addColorStop(0, "rgba(44,32,66,0.34)");
+    g.addColorStop(0.7, "rgba(18,13,30,0.22)");
     g.addColorStop(1, "rgba(6,5,14,0)");
-    ctx.fillStyle = g; eggPath(ctx); ctx.fill();
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
 
-    // clip everything to the egg
-    ctx.save();
-    eggPath(ctx); ctx.clip();
+    // central axis line linking the discs (the Meru axis / cosmic column)
+    ctx.strokeStyle = "rgba(255,210,140,0.14)"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx, sy(0)); ctx.lineTo(cx, sy(total)); ctx.stroke();
 
-    const left = sx(-HW), right = sx(HW), bw = right - left;
-
+    // each loka rendered as a flat round disc, stacked vertically
     for (const b of bands) {
       const y0 = sy(b.y0), y1 = sy(b.y1);
       if (y1 < -60 || y0 > h + 60) continue;
-      const lk = b.loka, kind = bandKind(lk, b.key);
-      const a0 = kind === "space" ? 0.04 : 0.16, a1 = kind === "space" ? 0.10 : 0.34;
-      const grad = ctx.createLinearGradient(0, y0, 0, y1);
-      grad.addColorStop(0, hexA(lk.color, a0));
-      grad.addColorStop(0.5, hexA(lk.color, a1));
-      grad.addColorStop(1, hexA(lk.color, a0));
-      ctx.fillStyle = grad; ctx.fillRect(left, y0, bw, y1 - y0);
-
-      drawBandTexture(ctx, left, y0, bw, y1 - y0, kind, t);
-
-      ctx.strokeStyle = "rgba(255,255,255,0.05)"; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(left, y0); ctx.lineTo(right, y0); ctx.stroke();
-
-      regions.push({ type: "rect", x: left, y: y0, w: bw, h: y1 - y0, info: lokaInfo(lk) });
-
-      if (e.showLabels && y1 - y0 > 16) {
-        ctx.save();
-        ctx.shadowColor = "rgba(0,0,0,0.7)"; ctx.shadowBlur = 6;
-        ctx.fillStyle = b.key === "bhu" ? "#fff4d8" : "rgba(248,240,224,0.95)";
-        ctx.font = "600 13px Georgia, 'Times New Roman', serif";
-        ctx.textAlign = "left";
-        ctx.fillText(lk.name, left + 14, (y0 + y1) / 2 + 4);
-        ctx.restore();
-        if (lk.altName) {
-          ctx.fillStyle = "rgba(210,200,178,0.6)";
-          ctx.font = "italic 11px Georgia, serif"; ctx.textAlign = "right";
-          ctx.fillText(lk.altName, right - 12, (y0 + y1) / 2 + 4);
-        }
-      }
+      drawLokaDisc(ctx, b, t, e);
     }
 
-    drawBhuPlane(ctx, left, right);
     drawLuminaries(ctx, t, e);
     drawShishumara(ctx, t, e);
     drawMeru(ctx, t);
 
-    ctx.restore(); // unclip
-
-    drawEggShell(ctx);
     drawTrilokaBracket(ctx, e);
     drawViratAxis(ctx, e);
     drawAxisTags(ctx, e);
+  }
+
+  function ellipsePath(ctx, x, y, rx, ry) { ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); }
+  function rgba(hex, dl, a) { const c = GFX.rgbOf(hex); const cl = (v) => Math.max(0, Math.min(255, v + dl)); return `rgba(${cl(c[0])},${cl(c[1])},${cl(c[2])},${a})`; }
+
+  function drawLokaDisc(ctx, b, t, e) {
+    const lk = b.loka, kind = bandKind(lk, b.key);
+    const y0 = sy(b.y0), y1 = sy(b.y1);
+    const cxB = sx(0), cyB = (y0 + y1) / 2;
+    const rxD = HW * cam.scale;
+    const ryD = Math.max(5, Math.min((y1 - y0) * 0.42, rxD * 0.17));
+    const isBhu = b.key === "bhu";
+    const faint = kind === "space" ? 0.32 : 1;
+    const th = Math.max(3, ryD * 0.7);
+
+    // clickable strip (full width of the band) for easy interaction
+    regions.push({ type: "rect", x: cxB - rxD, y: y0, w: rxD * 2, h: Math.max(1, y1 - y0), info: lokaInfo(lk) });
+
+    GFX.glow(ctx, cxB, cyB, rxD * 0.85, lk.color, isBhu ? 0.32 : 0.12 * faint);
+
+    // underside / rim — gives the disc its thickness
+    ctx.fillStyle = rgba(lk.color, -34, 0.9 * faint);
+    ellipsePath(ctx, cxB, cyB + th, rxD, ryD); ctx.fill();
+
+    // top surface
+    const grad = ctx.createRadialGradient(cxB - rxD * 0.25, cyB - ryD, ryD * 0.4, cxB, cyB, rxD);
+    grad.addColorStop(0, rgba(lk.color, 28, 0.98 * faint));
+    grad.addColorStop(0.7, rgba(lk.color, 0, 0.92 * faint));
+    grad.addColorStop(1, rgba(lk.color, -18, 0.86 * faint));
+    ctx.fillStyle = grad; ellipsePath(ctx, cxB, cyB, rxD, ryD); ctx.fill();
+
+    drawDiscTexture(ctx, cxB, cyB, rxD, ryD, kind, t);
+
+    // top-edge highlight
+    ctx.lineWidth = 1.2; ctx.strokeStyle = rgba("#fff3d6", 0, faint < 1 ? 0.15 : 0.4);
+    ctx.beginPath(); ctx.ellipse(cxB, cyB, rxD, ryD, 0, Math.PI * 1.04, Math.PI * 1.96); ctx.stroke();
+    if (isBhu) {
+      ctx.strokeStyle = "rgba(255,226,150,0.9)"; ctx.lineWidth = 2;
+      ellipsePath(ctx, cxB, cyB, rxD, ryD); ctx.stroke();
+      GFX.glow(ctx, cxB, cyB, rxD * 0.6, "#ffd27a", 0.4);
+    }
+
+    if (e.showLabels) {
+      ctx.save();
+      ctx.shadowColor = "rgba(0,0,0,0.85)"; ctx.shadowBlur = 6;
+      ctx.fillStyle = isBhu ? "#fff4d8" : "rgba(248,240,224,0.95)";
+      ctx.font = "600 13px Georgia, 'Times New Roman', serif"; ctx.textAlign = "left";
+      ctx.fillText(lk.name, cxB - rxD + 14, cyB + 4);
+      ctx.restore();
+      if (lk.altName) {
+        ctx.fillStyle = "rgba(210,200,178,0.65)"; ctx.font = "italic 11px Georgia, serif"; ctx.textAlign = "right";
+        ctx.fillText(lk.altName, cxB + rxD - 12, cyB + 4);
+      }
+    }
+  }
+
+  function drawDiscTexture(ctx, cx, cy, rx, ry, kind, t) {
+    let tile, blend, alpha, off = 0;
+    if (kind === "cloud") { tile = GFX.noiseTile("cloudTile", 220, 4, 5); blend = "overlay"; alpha = 0.25; off = (t * 0.004) % 220; }
+    else if (kind === "rock") { tile = GFX.noiseTile("rockTile", 160, 7, 5); blend = "multiply"; alpha = 0.4; }
+    else if (kind === "liquid") { tile = GFX.noiseTile("oceanTile", 160, 10, 4); blend = "overlay"; alpha = 0.25; off = (t * 0.01) % 160; }
+    else return;
+    ctx.save();
+    ellipsePath(ctx, cx, cy, rx, ry); ctx.clip();
+    ctx.globalAlpha = alpha; ctx.globalCompositeOperation = blend;
+    GFX.tile(ctx, tile, cx - rx, cy - ry, cx + rx, cy + ry, env.w, env.h, off, 0);
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+    ctx.restore();
   }
 
   function drawShishumara(ctx, t, e) {
