@@ -3,7 +3,7 @@
    panel, tooltip and controls. No external dependencies.
    ===================================================================== */
 (function () {
-  const VIEWS = [window.TrilokaView, window.BhuMandalaView];
+  const VIEWS = [window.CreationView, window.TrilokaView, window.BhuMandalaView];
   let current = VIEWS[0];
 
   const canvas = document.getElementById("scene");
@@ -57,8 +57,8 @@
     const note = document.createElement("div");
     note.style.cssText = "font-size:0.72rem;color:var(--ink-faint);line-height:1.6;padding:4px 10px;";
     note.innerHTML =
-      "Modelled on the cosmology of the <em>Srimad Bhagavatam</em>, Canto 5 " +
-      "(chapters 16&ndash;26). Distances in yojanas (1 yojana = 8 miles).";
+      "Built from the <em>Srimad Bhagavatam</em> (Canto 2 for creation, Canto 5 for structure) " +
+      "and a series of scripture-based video lectures. Distances in yojanas (1 yojana = 8 miles).";
     navEl.appendChild(note);
   }
 
@@ -100,6 +100,15 @@
   }
 
   function legendFor(v) {
+    if (v.id === "creation") {
+      return (
+        `<div class="divider"></div><div class="eyebrow">The descending hierarchy</div>` +
+        `<div class="legend">` +
+        COSMIC_HIERARCHY.map((n) => `<span class="chip"><i style="background:${n.realm === "spiritual" ? "#ffd980" : n.realm === "boundary" ? "#b9c2ff" : "#caa46a"}"></i>${n.name}</span>`).join("") +
+        `</div>` +
+        `<div class="body" style="margin-top:12px;font-size:0.82rem;color:var(--ink-dim)">Source: Video 1 — “Original Creation, Part 1”. As you add more videos from the series, new realms and teachings appear here automatically.</div>`
+      );
+    }
     if (v.id === "triloka") {
       return (
         `<div class="divider"></div><div class="eyebrow">Legend</div>` +
