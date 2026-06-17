@@ -8,7 +8,6 @@
 
   const canvas = document.getElementById("scene");
   const ctx = canvas.getContext("2d");
-  const glCanvas = document.getElementById("cosmosgl");
   const stage = document.getElementById("stage");
   const navEl = document.getElementById("nav");
   const infoEl = document.getElementById("info");
@@ -17,7 +16,7 @@
   const hintEl = document.getElementById("hint");
   const scaleReadout = document.getElementById("scaleReadout");
 
-  const env = { w: 0, h: 0, animating: true, showLabels: true, glActive: false };
+  const env = { w: 0, h: 0, animating: true, showLabels: true };
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let mouse = { x: -9999, y: -9999, inside: false };
   let pinned = null; // info pinned by click
@@ -31,7 +30,6 @@
     canvas.style.width = env.w + "px";
     canvas.style.height = env.h + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (env.glActive) CosmosGL.resize(env.w, env.h, dpr);
     current.reset(env);
   }
 
@@ -135,12 +133,19 @@
 
   function legendFor(v) {
     if (v.id === "creation") {
+      const hier =
+        COSMIC_HIERARCHY.map((n) => `<span class="chip"><i style="background:${n.realm === "spiritual" ? "#ffd980" : n.realm === "boundary" ? "#b9c2ff" : "#caa46a"}"></i>${n.name}</span>`).join("");
+      const chain = TATTVA_EMANATION
+        .map((n) => `<span class="chip" title="${n.note.replace(/"/g, "&quot;")} (${n.ref})">${n.name}</span>`)
+        .join('<span class="arrow">&rarr;</span>');
+      const np = CONCEPTS.find((c) => c.key === "narayana-para");
       return (
         `<div class="divider"></div><div class="eyebrow">The descending hierarchy</div>` +
-        `<div class="legend">` +
-        COSMIC_HIERARCHY.map((n) => `<span class="chip"><i style="background:${n.realm === "spiritual" ? "#ffd980" : n.realm === "boundary" ? "#b9c2ff" : "#caa46a"}"></i>${n.name}</span>`).join("") +
-        `</div>` +
-        `<div class="body" style="margin-top:12px;font-size:0.82rem;color:var(--ink-dim)">Source: Video 1 — “Original Creation, Part 1”. As you add more videos from the series, new realms and teachings appear here automatically.</div>`
+        `<div class="legend">${hier}</div>` +
+        `<div class="divider"></div><div class="eyebrow">Chain of emanation &middot; Video 2</div>` +
+        `<div class="legend">${chain}</div>` +
+        `<div class="body" style="margin-top:10px;font-size:0.82rem;color:var(--ink-dim)">${np.body} <span style="color:var(--gold)">(${np.ref})</span></div>` +
+        `<div class="body" style="margin-top:10px;font-size:0.8rem;color:var(--ink-faint)">Sources: Video 1 &amp; 2 — &ldquo;Original Creation&rdquo;. New videos extend this automatically.</div>`
       );
     }
     if (v.id === "triloka") {
@@ -238,29 +243,6 @@
     labelBtn.classList.toggle("active", env.showLabels);
   });
 
-  // optional WebGL "3D cosmos" layer — off by default, enabled on demand so
-  // it can never blank the proven 2D renderer.
-  const glBtn = document.getElementById("glToggle");
-  let glReady = false;
-  if (glBtn) glBtn.addEventListener("click", () => {
-    if (!env.glActive) {
-      if (!glReady) { try { glReady = !!(window.CosmosGL && CosmosGL.init(glCanvas)); } catch (e) { glReady = false; } }
-      if (glReady && CosmosGL.ok) {
-        glCanvas.style.display = "block";
-        env.glActive = true;
-        CosmosGL.resize(env.w, env.h, dpr);
-        glBtn.classList.add("active");
-      } else {
-        glBtn.textContent = "3D unavailable";
-        glBtn.disabled = true;
-      }
-    } else {
-      env.glActive = false;
-      glCanvas.style.display = "none";
-      glBtn.classList.remove("active");
-    }
-  });
-
   /* ---- epigraph rotation ---- */
   const epi = document.getElementById("epigraph");
   let epiIdx = 0;
@@ -279,22 +261,6 @@
     if (env.animating) tAnim += dt;
     try {
       current.draw(ctx, env, tAnim);
-
-      if (env.glActive) {
-        try {
-          CosmosGL.render({
-            time: tAnim,
-            tint: current.glTint || [0.45, 0.34, 0.66],
-            nebula: current.glNebula == null ? 1.0 : current.glNebula,
-            bodies: current.glBodies || [],
-            dpr: dpr,
-          });
-        } catch (e) {
-          env.glActive = false;
-          if (glCanvas) glCanvas.style.display = "none";
-          if (glBtn) glBtn.classList.remove("active");
-        }
-      }
       applyBloom();
 
       if (mouse.inside && !dragging) {

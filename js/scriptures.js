@@ -22,6 +22,13 @@ const SOURCES = [
     covers:
       "The two-fold creation (spiritual vs material), the Purusha-avatars, Maha-Vishnu breathing out infinite universes, Garbhodakasayi Vishnu, the navel-lotus and the birth of Brahma, Yogamaya vs Mahamaya, and the self-effulgent spiritual abode.",
   },
+  {
+    id: 2,
+    title: "Original Creation — Part 2",
+    kind: "Hindi lecture (Srimad Bhagavatam, Canto 2, ch. 4-5)",
+    covers:
+      "Narada's inquiry to Brahma; Brahma's confession that he is not independent (the spider and sun analogies); the chain of emanation from Vasudeva through the brahma-jyoti and mahat-tattva to the elements; the Narayana-para principle (everything exists for Narayana); the meaning of nirguna; the three modes producing matter, knowledge and activity; and the universal accessibility of devotion.",
+  },
 ];
 const sourceTag = (ids) => ids.map((i) => "Video " + i).join(", ");
 
@@ -110,7 +117,7 @@ const CONCEPTS = [
     key: "maya",
     title: "Yogamaya and Mahamaya",
     ref: "Bs 5.44; SB 2.5",
-    sources: [1],
+    sources: [1, 2],
     body:
       "In the spiritual world the internal potency, Yogamaya, arranges the Lord's loving pastimes. In the material world the external potency, Mahamaya (the 'shadow' energy, personified as Durga), governs the dream of material existence.",
   },
@@ -154,6 +161,54 @@ const CONCEPTS = [
     body:
       "Krishna, the original Personality of Godhead, descends once in a day of Brahma — in the Dvapara-yuga of the 28th maha-yuga of the 7th (Vaivasvata) Manu — while His expansions (Rama, Nrisimha, Varaha and others) appear as needed.",
   },
+  {
+    key: "emanation",
+    title: "The chain of emanation",
+    ref: "SB 2.5.14, 2.5.22-24",
+    sources: [2],
+    body:
+      "Everything emanates from Vasudeva: from Him comes the brahma-jyoti (His self-effulgence), from which arises the mahat-tattva (the total material energy), and from that come the living entities, the elements, action (karma), time (kala) and nature (svabhava). 'Matter, activity, time, nature and the living entities exist only because of Vasudeva.'",
+  },
+  {
+    key: "narayana-para",
+    title: "Everything is meant for Narayana",
+    ref: "SB 2.5.15-16",
+    sources: [2],
+    body:
+      "The Vedas, the demigods, the planets, sacrifices, yoga, austerity and knowledge are all 'narayana-para' — they exist for and lead to Narayana. The single purpose of the whole creation is to bring the wandering soul back to the Lord; knowledge or austerity that does not lead to Him is incomplete.",
+  },
+  {
+    key: "brahma-dependent",
+    title: "Brahma is empowered, not independent",
+    ref: "SB 2.5.6, 2.5.17-18",
+    sources: [2],
+    body:
+      "Narada asked whether Brahma creates by his own power, like a spider spinning a web from itself, or like the self-luminous sun. Brahma replied that he is not the Supreme and not equal to Vishnu — he only engineers, under the Lord's direction, what Narayana has already empowered and arranged. The Lord creates effortlessly, by His energy alone, as fire cooks without leaving its place.",
+  },
+  {
+    key: "nirguna",
+    title: "Nirguna does not mean formless",
+    ref: "SB 2.5.18-19; BG 14.27",
+    sources: [2],
+    body:
+      "The Lord is called nirguna — 'without qualities' — because He is never entangled or conditioned by the three material modes, not because He has no form. His form is sach-chid-ananda (eternity, knowledge, bliss); the impersonal brahma-jyoti is only His radiance, and He is its source.",
+  },
+  {
+    key: "modes-triad",
+    title: "The three modes weave matter, knowledge and activity",
+    ref: "SB 2.5.18, 2.5.32",
+    sources: [2],
+    body:
+      "Within the interplay of sattva, rajas and tamas the conditioned soul experiences three things — substance (dravya / matter), knowledge (jnana) and activity (kriya). Absorbed in these, the soul keeps tallying its gains and losses, virtue and vice, while the way out is devotion that transcends both.",
+  },
+  {
+    key: "bhakti-universal",
+    title: "Devotion purifies everyone",
+    ref: "SB 2.4.18",
+    sources: [2],
+    body:
+      "'Kiratas, Hunas, Andhras, Pulindas, Pulkasas, Abhiras, Shumbhas, Yavanas, Khasas and even others addicted to sin can be purified by taking shelter of the Lord's devotees, for He is the supreme power.' Bhakti is open to all — any age, land or birth — by simply reconnecting with the Lord; even chanting His holy name is directly transcendental.",
+  },
 ];
 
 /* ---- macro time figures referenced above ---- */
@@ -164,6 +219,18 @@ const MACRO_TIME = {
   ref: "SB 3.11; Bhagavad-gita 8.17",
   sources: [1],
 };
+
+/* ---- the chain of emanation (tattva sequence) from Video 2, SB 2.5 ----
+   How the material ingredients unfold from the Supreme Person. */
+const TATTVA_EMANATION = [
+  { name: "Vasudeva", sanskrit: "Sri Krishna", note: "The Supreme Person — the origin of all energies and ingredients.", ref: "SB 2.5.14", sources: [2] },
+  { name: "Brahma-jyoti", sanskrit: "sva-rocisha", note: "The Lord's own self-effulgence. Many yogis reach only this impersonal radiance and stop, never reaching the Person who is its source.", ref: "Bs 5.40; BG 14.27", sources: [2] },
+  { name: "Mahat-tattva", sanskrit: "the total material energy", note: "The reservoir of matter, set in motion by the Lord's glance through His shadow energy (Maya / Durga), who herself feels shame before Him.", ref: "SB 2.5.22; Bs 5.44", sources: [2] },
+  { name: "Jiva", sanskrit: "the living entities", note: "Eternal sparks of the Lord, never themselves the controller, who act within the elements and time.", ref: "SB 2.5.14", sources: [2] },
+  { name: "Pancha-mahabhuta", sanskrit: "the five gross elements", note: "Earth, water, fire, air and ether — the substance (dravya) the soul experiences.", ref: "SB 2.5.25-26", sources: [2] },
+  { name: "Karma", sanskrit: "action / interaction", note: "The activity (kriya) of the living entity among the elements.", ref: "SB 2.5.14", sources: [2] },
+  { name: "Kala", sanskrit: "time", note: "The Lord's impersonal feature that drives creation, maintenance and dissolution; birth and death occur within it.", ref: "SB 2.5.14", sources: [2] },
+];
 
 /* helper for nicely formatted big numbers */
 const bigNum = (n) => n.toLocaleString("en-US");

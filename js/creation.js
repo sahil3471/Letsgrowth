@@ -78,9 +78,7 @@ window.CreationView = (function () {
     bg.addColorStop(0.16, "#15183a");
     bg.addColorStop(0.5, "#0a1130");
     bg.addColorStop(1, "#05050e");
-    ctx.fillStyle = bg;
-    if (e.glActive) { ctx.globalAlpha = 0.5; ctx.fillRect(0, 0, w, h); ctx.globalAlpha = 1; }
-    else ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
     // rippling causal water (lower half)
     const tile = GFX.noiseTile("oceanTile", 160, 10, 4);
     ctx.save(); ctx.beginPath(); ctx.rect(0, h * 0.32, w, h * 0.68); ctx.clip();
@@ -110,6 +108,7 @@ window.CreationView = (function () {
     const vs = ss(VISHNU.r) * 0.8 * (0.97 + 0.06 * breath);
     drawRecliningVishnu(ctx, sx(VISHNU.x), sy(VISHNU.y), vs, t, { hoods: 7 });
     regions.push({ type: "ellipse", cx: sx(VISHNU.x), cy: sy(VISHNU.y), rx: vs * 1.7, ry: vs * 0.95, info: hierInfo("mahavishnu", "First purusha-avatar"), pr: 4 });
+    label(ctx, e, "the brahma-jyoti — His self-effulgence", sx(VISHNU.x), sy(VISHNU.y) - vs * 0.98 - 6, "center", "rgba(255,236,180,0.6)", "italic 11px Georgia, serif");
     label(ctx, e, "Maha-Vishnu — reclining on the Causal Ocean", sx(VISHNU.x), sy(VISHNU.y) + vs * 0.88 + 16, "center");
 
     // --- exhaled universes streaming out ---
@@ -428,8 +427,8 @@ window.CreationView = (function () {
   function universesInfo() {
     const c = CONCEPTS.find((x) => x.key === "time");
     return { eyebrow: "Ananta-koti brahmanda", name: "Innumerable Universes", alt: "from the pores of Maha-Vishnu",
-      ref: "Brahma-samhita 5.48", body: "Countless universes emanate from the pores of Maha-Vishnu's body like atoms passing through a screen — appearing as He exhales and dissolving as He inhales. " + c.body,
-      facts: [["A Brahma's life", bigNum(MACRO_TIME.brahmaLifeYears) + " yrs"], ["Source", sourceTag([1])]], triloka: false };
+      ref: "Brahma-samhita 5.48", body: "Countless universes emanate from the pores of Maha-Vishnu's body like atoms through a screen — appearing as He exhales and dissolving as He inhales. Their material ingredients unfold from His effulgence (brahma-jyoti) through the mahat-tattva. " + c.body,
+      facts: [["A Brahma's life", bigNum(MACRO_TIME.brahmaLifeYears) + " yrs"], ["Source", sourceTag([1, 2])]], triloka: false };
   }
 
   /* ---- hit testing (highest pr wins) ---- */
@@ -454,7 +453,6 @@ window.CreationView = (function () {
     navSub: "Maha-Vishnu & the universes",
     accent: "#b9c2ff",
     hint: "Scroll to zoom · drag to pan · hover Maha-Vishnu, a universe, or the expanded egg",
-    glTint: [0.34, 0.34, 0.72], glNebula: 1.0,
     reset, draw, hitTest, onWheel, onDrag,
   };
 })();

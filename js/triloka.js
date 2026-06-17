@@ -19,7 +19,6 @@ window.TrilokaView = (function () {
   let svarBand = null;
   const cam = { scale: 1, y: 0, baseScale: 1 };
   let regions = [];          // screen-space hit regions, rebuilt each frame
-  let glBodies = [];         // 3D bodies handed to the WebGL renderer
   let env = { w: 0, h: 0 };
 
   /* ---- build the stacked layout (top -> bottom) ---- */
@@ -124,7 +123,6 @@ window.TrilokaView = (function () {
   function draw(ctx, e, t) {
     env = e;
     regions = [];
-    glBodies = [];
     const w = e.w, h = e.h;
     ctx.clearRect(0, 0, w, h);
 
@@ -132,12 +130,10 @@ window.TrilokaView = (function () {
     const ry = (total / 2) * 1.05 * cam.scale;
     const rx = HW * 1.22 * cam.scale;
 
-    // deep interior atmosphere of the cosmic egg.  With WebGL active the egg
-    // becomes a window onto the 3D cosmos, so the interior stays mostly clear.
-    const a = e.glActive ? 0.16 : 0.6;
+    // deep interior atmosphere of the cosmic egg
     const g = ctx.createRadialGradient(cx, cy - ry * 0.2, 10, cx, cy, ry * 1.15);
-    g.addColorStop(0, "rgba(46,34,72," + a + ")");
-    g.addColorStop(0.6, "rgba(20,14,34," + (a * 0.8) + ")");
+    g.addColorStop(0, "rgba(46,34,72,0.6)");
+    g.addColorStop(0.6, "rgba(20,14,34,0.5)");
     g.addColorStop(1, "rgba(6,5,14,0)");
     ctx.fillStyle = g; eggPath(ctx); ctx.fill();
 
@@ -266,12 +262,9 @@ window.TrilokaView = (function () {
       const r = L.data.radius * sizeF;
       const rd = L.data.render || { type: "rocky" };
 
-      if (rd.type === "cluster") {
-        drawCluster(ctx, x, y, r, rd.count, t);           // clusters stay 2D
-      } else if (e.glActive) {
-        glBodies.push(glBody(L, x, y, r, rd));            // real 3D in WebGL
-      } else if (rd.type === "sun") GFX.drawSun(ctx, x, y, r, t);
+      if (rd.type === "sun") GFX.drawSun(ctx, x, y, r, t);
       else if (rd.type === "star") GFX.drawStar(ctx, x, y, r, t);
+      else if (rd.type === "cluster") drawCluster(ctx, x, y, r, rd.count, t);
       else GFX.drawPlanet(ctx, x, y, r, Object.assign({ glow: L.data.glow }, rd));
 
       regions.push({ type: "circle", cx: x, cy: y, r: r * 1.6 + 6, info: lumiInfo(L.data) });
@@ -285,16 +278,6 @@ window.TrilokaView = (function () {
         ctx.restore();
       }
     }
-  }
-
-  function hex01(hx) { const c = GFX.rgbOf(hx); return [c[0] / 255, c[1] / 255, c[2] / 255]; }
-  function glBody(L, x, y, r, rd) {
-    const ty = rd.type;
-    if (ty === "sun") return { x, y, r: r * 1.2, type: 0, color: [1.0, 0.72, 0.32], glow: 1.7 };
-    if (ty === "star") return { x, y, r: r * 1.05, type: 4, color: [1, 1, 1], glow: 1.9 };
-    if (ty === "gas") return { x, y, r: r * 1.1, type: 2, color: hex01(rd.band || rd.mid || L.data.color), glow: 1.1 };
-    if (ty === "moon") return { x, y, r, type: 3, color: hex01(rd.mid || L.data.color), glow: 0.9 };
-    return { x, y, r, type: 1, color: hex01(rd.mid || L.data.color), glow: 1.0 };
   }
 
   function drawCluster(ctx, x, y, r, count, t) {
@@ -448,8 +431,6 @@ window.TrilokaView = (function () {
     navSub: "Vertical cross-section",
     accent: "#ffb347",
     hint: "Scroll to zoom · drag to travel up & down the worlds · hover any realm",
-    glTint: [0.52, 0.34, 0.62], glNebula: 0.9,
-    get glBodies() { return glBodies; },
     reset, draw, hitTest, onWheel, onDrag,
   };
 })();

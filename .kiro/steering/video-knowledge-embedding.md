@@ -45,3 +45,11 @@ ones.
   universes (Bs 5.48), Garbhodakasayi Vishnu, the navel-lotus and Brahma,
   Yogamaya vs Mahamaya, the self-effulgent abode (BG 15.6). Based on
   Srimad Bhagavatam, Canto 2 (chapters 4–5).
+- **Video 2 — “Original Creation, Part 2.”** Narada's inquiry to Brahma;
+  Brahma is empowered, not independent (the spider and sun analogies); the
+  chain of emanation Vasudeva → brahma-jyoti → mahat-tattva → jiva, elements,
+  karma, kala (SB 2.5.14, 2.5.22-26); the Narayana-para principle that
+  everything exists for Narayana (SB 2.5.15-16); nirguna = beyond the modes,
+  not formless (BG 14.27); the three modes producing matter, knowledge and
+  activity; and the universal accessibility of devotion (SB 2.4.18).
+  Added to `CONCEPTS`, `TATTVA_EMANATION`, and the Creation view's legend.
