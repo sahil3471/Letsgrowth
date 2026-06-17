@@ -358,6 +358,7 @@ window.BhuMandalaView = (function () {
     navName: "Bhu-mandala", navSub: "The Earth circle (top view)",
     accent: "#caa46a",
     hint: "Scroll to zoom · drag to pan · hover an island, ocean, or region · the Sun circles Meru",
+    glTint: [0.22, 0.4, 0.6], glNebula: 0.7,
     reset, draw, hitTest, onWheel, onDrag,
   };
 })();

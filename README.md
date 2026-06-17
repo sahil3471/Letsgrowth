@@ -57,3 +57,18 @@ js/triloka.js       the fourteen-worlds vertical cross-section
 js/bhumandala.js    the Bhu-mandala top-down map
 js/app.js           engine: navigation, animation loop, interaction, info panel
 ```
+
+
+## Rendering
+
+The simulation now renders with a custom, dependency-free **WebGL2** layer
+(`js/cosmosgl.js`) — a single fragment shader that produces an HDR procedural
+nebula, a multi-layer starfield, and real analytic-3D lit celestial bodies
+(sun, rocky, gas, icy and star types) with specular, fresnel rim light and
+additive bloom, finished with ACES filmic tonemapping, vignette and grain.
+Everything is generated in-shader (no textures, no libraries), so it still runs
+fully offline by just opening `index.html`.
+
+A Canvas2D layer draws the structural diagrams, figures and labels on top, with
+a cinematic bloom post-pass. If WebGL2 is unavailable the app **falls back**
+gracefully to the pure Canvas2D renderer, so it always works.

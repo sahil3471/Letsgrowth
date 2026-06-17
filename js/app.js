@@ -8,6 +8,7 @@
 
   const canvas = document.getElementById("scene");
   const ctx = canvas.getContext("2d");
+  const glCanvas = document.getElementById("cosmosgl");
   const stage = document.getElementById("stage");
   const navEl = document.getElementById("nav");
   const infoEl = document.getElementById("info");
@@ -16,7 +17,7 @@
   const hintEl = document.getElementById("hint");
   const scaleReadout = document.getElementById("scaleReadout");
 
-  const env = { w: 0, h: 0, animating: true, showLabels: true };
+  const env = { w: 0, h: 0, animating: true, showLabels: true, glActive: false };
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let mouse = { x: -9999, y: -9999, inside: false };
   let pinned = null; // info pinned by click
@@ -30,7 +31,30 @@
     canvas.style.width = env.w + "px";
     canvas.style.height = env.h + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (env.glActive) CosmosGL.resize(env.w, env.h, dpr);
     current.reset(env);
+  }
+
+  /* ---- cinematic bloom post-pass on the 2D scene ---- */
+  let bloomCv = null, bctx = null, bloomOk = true;
+  function applyBloom() {
+    if (!bloomOk) return;
+    try {
+      const bw = Math.max(1, Math.floor(env.w / 2)), bh = Math.max(1, Math.floor(env.h / 2));
+      if (!bloomCv) { bloomCv = document.createElement("canvas"); bctx = bloomCv.getContext("2d"); }
+      if (bloomCv.width !== bw || bloomCv.height !== bh) { bloomCv.width = bw; bloomCv.height = bh; }
+      bctx.clearRect(0, 0, bw, bh);
+      bctx.filter = "blur(3px)";
+      bctx.drawImage(canvas, 0, 0, bw, bh);
+      bctx.filter = "none";
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 0.34;
+      ctx.filter = "blur(2px)";
+      ctx.drawImage(bloomCv, 0, 0, bw, bh, 0, 0, env.w, env.h);
+      ctx.restore();
+      ctx.filter = "none";
+    } catch (e) { bloomOk = false; } // filter unsupported -> disable gracefully
   }
 
   /* ---- navigation ---- */
@@ -63,15 +87,20 @@
   }
 
   function selectView(v) {
-    current = v;
-    navEl.querySelectorAll(".nav-item").forEach((n) =>
-      n.classList.toggle("active", n.dataset.id === v.id)
-    );
-    stageTitle.innerHTML = `<h2>${v.title}</h2><p>${v.subtitle}</p>`;
-    hintEl.textContent = v.hint;
-    pinned = null;
-    renderInfo(null);
-    current.reset(env);
+    if (v === current) return;
+    stage.classList.add("switching");
+    setTimeout(() => {
+      current = v;
+      navEl.querySelectorAll(".nav-item").forEach((n) =>
+        n.classList.toggle("active", n.dataset.id === v.id)
+      );
+      stageTitle.innerHTML = `<h2>${v.title}</h2><p>${v.subtitle}</p>`;
+      hintEl.textContent = v.hint;
+      pinned = null;
+      renderInfo(null);
+      current.reset(env);
+      stage.classList.remove("switching");
+    }, 240);
   }
 
   /* ---- info panel ---- */
@@ -222,6 +251,18 @@
     if (env.animating) tAnim += dt;
     current.draw(ctx, env, tAnim);
 
+    // WebGL cosmos (background + 3D bodies) renders behind the 2D scene
+    if (env.glActive) {
+      CosmosGL.render({
+        time: tAnim,
+        tint: current.glTint || [0.45, 0.34, 0.66],
+        nebula: current.glNebula == null ? 1.0 : current.glNebula,
+        bodies: current.glBodies || [],
+        dpr: dpr,
+      });
+    }
+    applyBloom();
+
     // hover hit-test (only when not dragging)
     if (mouse.inside && !dragging) {
       const info = current.hitTest(mouse.x, mouse.y);
@@ -238,6 +279,9 @@
 
   /* ---- boot ---- */
   function boot() {
+    if (glCanvas && window.CosmosGL) {
+      try { env.glActive = CosmosGL.init(glCanvas); } catch (e) { env.glActive = false; }
+    }
     buildNav();
     stageTitle.innerHTML = `<h2>${current.title}</h2><p>${current.subtitle}</p>`;
     hintEl.textContent = current.hint;

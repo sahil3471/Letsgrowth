@@ -78,7 +78,9 @@ window.CreationView = (function () {
     bg.addColorStop(0.16, "#15183a");
     bg.addColorStop(0.5, "#0a1130");
     bg.addColorStop(1, "#05050e");
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = bg;
+    if (e.glActive) { ctx.globalAlpha = 0.5; ctx.fillRect(0, 0, w, h); ctx.globalAlpha = 1; }
+    else ctx.fillRect(0, 0, w, h);
     // rippling causal water (lower half)
     const tile = GFX.noiseTile("oceanTile", 160, 10, 4);
     ctx.save(); ctx.beginPath(); ctx.rect(0, h * 0.32, w, h * 0.68); ctx.clip();
@@ -452,6 +454,7 @@ window.CreationView = (function () {
     navSub: "Maha-Vishnu & the universes",
     accent: "#b9c2ff",
     hint: "Scroll to zoom · drag to pan · hover Maha-Vishnu, a universe, or the expanded egg",
+    glTint: [0.34, 0.34, 0.72], glNebula: 1.0,
     reset, draw, hitTest, onWheel, onDrag,
   };
 })();
