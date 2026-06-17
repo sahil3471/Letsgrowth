@@ -3,7 +3,7 @@
    panel, tooltip and controls. No external dependencies.
    ===================================================================== */
 (function () {
-  const VIEWS = [window.CreationView, window.TrilokaView, window.BhuMandalaView];
+  const VIEWS = [window.CreationView, window.ElementsView, window.TrilokaView, window.BhuMandalaView];
   let current = VIEWS[0];
 
   const canvas = document.getElementById("scene");
@@ -146,6 +146,21 @@
         `<div class="legend">${chain}</div>` +
         `<div class="body" style="margin-top:10px;font-size:0.82rem;color:var(--ink-dim)">${np.body} <span style="color:var(--gold)">(${np.ref})</span></div>` +
         `<div class="body" style="margin-top:10px;font-size:0.8rem;color:var(--ink-faint)">Sources: Video 1 &amp; 2 — &ldquo;Original Creation&rdquo;. New videos extend this automatically.</div>`
+      );
+    }
+    if (v.id === "tattvas") {
+      return (
+        `<div class="divider"></div><div class="eyebrow">The three modes</div>` +
+        `<div class="legend">` +
+        `<span class="chip"><i style="background:#ffd86b"></i>Sattva — goodness</span>` +
+        `<span class="chip"><i style="background:#ff9d5c"></i>Rajas — passion</span>` +
+        `<span class="chip"><i style="background:#9a8bc0"></i>Tamas — ignorance</span>` +
+        `</div>` +
+        `<div class="divider"></div><div class="eyebrow">The five elements</div>` +
+        `<div class="legend">` +
+        ELEMENTS.map((el) => `<span class="chip" title="quality: ${el.tanmatra}; ${el.sense}">${el.name}</span>`).join("") +
+        `</div>` +
+        `<div class="body" style="margin-top:10px;font-size:0.8rem;color:var(--ink-faint)">Source: Video 3 &mdash; &ldquo;Original Creation, Part 3&rdquo; (Sankhya of SB 3.26).</div>`
       );
     }
     if (v.id === "triloka") {

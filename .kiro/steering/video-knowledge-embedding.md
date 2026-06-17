@@ -53,3 +53,13 @@ ones.
   not formless (BG 14.27); the three modes producing matter, knowledge and
   activity; and the universal accessibility of devotion (SB 2.4.18).
   Added to `CONCEPTS`, `TATTVA_EMANATION`, and the Creation view's legend.
+- **Video 3 — “Original Creation, Part 3.”** The detailed Sankhya emanation
+  (SB 3.26): mahat-tattva → time + false ego (ahankara), which divides by the
+  three modes — sattva (mind + ten presiding demigods), rajas (intelligence,
+  life-air, ten senses), tamas (five subtle → five gross elements, each
+  carrying one more sense-quality). Also the three Purusha-avatars on the
+  three oceans (Karana / Garbhodaka / Kshira), the three guna-avataras
+  (Brahma/Vishnu/Shiva), and each soul receiving a body per its desire and
+  karma. Added `AHANKARA_DIVISION`, `SENSE_DEITIES`, `ELEMENTS`,
+  `GUNA_AVATARAS` and the new **Elements view** (`js/elements.js`) — an
+  interactive Sankhya emanation tree.
