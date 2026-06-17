@@ -50,6 +50,13 @@ const SOURCES = [
     covers:
       "Brahma's birth in darkness and the instruction 'tapa' (austerity); his thousand-year penance and the origin of the Gayatri given by Sarasvati; the Lord's three energies (internal, marginal, external); the genesis of Shiva (Shambhu) and Maya as the linga and yoni whose union yields the mahat-tattva; the holy name being non-different from the Lord; and Maha-Vishnu (Narayana) resting aloof in yoga-nidra on the Causal waters.",
   },
+  {
+    id: 6,
+    title: "Original Creation — Part 6",
+    kind: "Hindi lecture (Srimad Bhagavatam 2.9-2.10)",
+    covers:
+      "The Lord's words to Brahma — 'I alone existed before, during and after' — and the world as His reflection; the ten subjects through which the Bhagavatam explains everything (sarga, visarga, sthana, poshana, uti, manvantara, ishanukatha, nirodha, mukti, ashraya); how the Virat-purusha's senses manifest, each governed by a presiding deity; the threefold view (self, element, deity); and the Lord as the ultimate shelter (ashraya) of the five sheaths.",
+  },
 ];
 const sourceTag = (ids) => ids.map((i) => "Video " + i).join(", ");
 
@@ -358,6 +365,38 @@ const CONCEPTS = [
     body:
       "He who lies upon the Causal waters (nara) is called Narayana. Maha-Vishnu rests there in yoga-nidra, casting only His glance upon the material energy and remaining aloof — as a king builds a prison yet has no wish to live in it. The material world exists for the souls who wish to enjoy apart from Him, and as the path back for those who would return.",
   },
+  {
+    key: "before-creation",
+    title: "'I alone existed' — the world as His reflection",
+    ref: "SB 2.9.32-35",
+    sources: [6],
+    body:
+      "The Lord told Brahma: before the creation I alone existed; what you see now is also Myself; and what remains after annihilation is Myself again. Whatever appears valuable apart from Me is My illusory reflection (maya) — like an image in a mirror; valued in relation to Me it is spiritual, divorced from Me it is mere matter.",
+  },
+  {
+    key: "dasha-lakshana",
+    title: "The ten subjects of the Bhagavatam",
+    ref: "SB 2.10.1",
+    sources: [6],
+    body:
+      "The Bhagavatam explains everything through ten subjects: sarga (primary creation), visarga (secondary creation), sthana (maintenance), poshana (protection), uti (the urges to act), manvantara (the reigns of the Manus), ishanukatha (narrations of the Lord), nirodha (winding up), mukti (liberation), and ashraya (the ultimate shelter) — the last being the Supreme Person, the support of all the rest.",
+  },
+  {
+    key: "virat-senses",
+    title: "The senses of the cosmic being and their deities",
+    ref: "SB 2.10.16-30; 2.6",
+    sources: [6],
+    body:
+      "Each desire of the Virat-purusha manifests a sense organ, governed by a presiding demigod: speech by Fire, breath by Vayu, sight by the Sun, hearing by the directions, touch by the plants, hands by Indra, movement by Vishnu, the heart by the Moon, and so on. Thus every faculty is seen three ways — as the soul's sense (adhyatmika), the physical organ (adhibhautika), and its controlling deity (adhidaivika).",
+  },
+  {
+    key: "panchakosha-ashraya",
+    title: "The five sheaths and the ultimate shelter",
+    ref: "Taittiriya Upanishad 2; SB 2.10",
+    sources: [6],
+    body:
+      "The self is wrapped in five sheaths — food (annamaya), life-air (pranamaya), mind (manomaya), intelligence (vijnanamaya) and bliss (anandamaya). Going inward through them, the final shelter (ashraya) of all beings, elements and senses is the blissful Supreme Person Himself.",
+  },
 ];
 
 /* ---- macro time figures referenced above ---- */
@@ -438,6 +477,34 @@ const THREE_SHAKTIS = [
   { name: "Antaranga", alt: "internal — spiritual", color: "#ffd980", note: "The Lord's own pleasure potency (Radha, Sita, Lakshmi)." },
   { name: "Tatastha", alt: "marginal — the souls", color: "#9ad7c0", note: "The countless living beings, who may turn toward spirit or matter." },
   { name: "Bahiranga", alt: "external — maya", color: "#9a8bc0", note: "The illusory energy that governs the material world." },
+];
+
+/* The ten subjects of the Bhagavatam (Video 6, SB 2.10.1). */
+const BHAGAVATA_TOPICS = [
+  { name: "Sarga", en: "primary creation" },
+  { name: "Visarga", en: "secondary creation" },
+  { name: "Sthana", en: "maintenance" },
+  { name: "Poshana", en: "protection" },
+  { name: "Uti", en: "the urge to act" },
+  { name: "Manvantara", en: "reigns of the Manus" },
+  { name: "Ishanukatha", en: "narrations of the Lord" },
+  { name: "Nirodha", en: "winding up" },
+  { name: "Mukti", en: "liberation" },
+  { name: "Ashraya", en: "the ultimate shelter" },
+];
+
+/* The Virat-purusha's senses, organs and presiding deities (Video 6, SB 2.10). */
+const VIRAT_SENSES = [
+  { desire: "To speak", organ: "Mouth", deity: "Agni (fire)" },
+  { desire: "To breathe", organ: "Nostrils", deity: "Vayu (wind)" },
+  { desire: "To see", organ: "Eyes", deity: "Surya (sun)" },
+  { desire: "To hear", organ: "Ears", deity: "Dik (the directions)" },
+  { desire: "To feel", organ: "Skin", deity: "Vanaspati (plants)" },
+  { desire: "To work", organ: "Hands", deity: "Indra" },
+  { desire: "To move", organ: "Legs", deity: "Vishnu" },
+  { desire: "To think", organ: "Heart", deity: "Chandra (moon)" },
+  { desire: "To procreate", organ: "Genitals", deity: "Prajapati" },
+  { desire: "To eat", organ: "Belly", deity: "Rivers & seas" },
 ];
 
 /* helper for nicely formatted big numbers */

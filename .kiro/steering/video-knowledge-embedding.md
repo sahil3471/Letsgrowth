@@ -81,3 +81,19 @@ ones.
   the Lord; and Narayana resting aloof in yoga-nidra on the Causal waters.
   Added six CONCEPTS and `THREE_SHAKTIS`; refined the Mahat-tattva node; and
   surfaced the three energies in the Creation view's legend.
+
+- **Video 6 — “Original Creation, Part 6.”** The Lord's words to Brahma
+  ('I alone existed before, during and after'; the world as His reflection,
+  SB 2.9.32-35); the ten subjects of the Bhagavatam (sarga, visarga, sthana,
+  poshana, uti, manvantara, ishanukatha, nirodha, mukti, ashraya — SB 2.10.1);
+  the Virat-purusha's senses, organs and presiding deities (SB 2.10.16-30);
+  the threefold view (adhyatmika / adhibhautika / adhidaivika); and the five
+  sheaths with the Lord as the ultimate shelter (ashraya). Added four CONCEPTS,
+  `BHAGAVATA_TOPICS` and `VIRAT_SENSES`; surfaced the ten subjects in the
+  Creation legend and the senses-and-deities in the Fourteen-Worlds legend.
+
+## UI note
+- The Fourteen-Worlds "Brahmanda" is drawn as a tall **rounded oval** (rounded
+  rectangle), not a pointed ellipse, and is fit to the viewport in both
+  directions so every loka band stays fully visible (the ellipse tips used to
+  pinch Satyaloka and the lowest worlds out of view).

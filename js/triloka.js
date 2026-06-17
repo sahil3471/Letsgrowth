@@ -12,7 +12,7 @@
 
 window.TrilokaView = (function () {
   const GFX = window.GFX;
-  const HW = 300;            // half-width of the world column (world units)
+  const HW = 330;            // half-width of the world column (world units)
   let bands = [];            // ordered band layout
   let total = 0;             // total world height
   let lumis = [];            // luminary placements
@@ -81,7 +81,10 @@ window.TrilokaView = (function () {
   function reset(e) {
     env = e;
     if (!bands.length) build();
-    cam.baseScale = (e.h - 40) / total;
+    // fit the egg to the viewport (both directions) so every loka is visible
+    const fitH = (e.h - 22) / total;
+    const fitW = (e.w - 120) / (2 * HW);
+    cam.baseScale = Math.max(0.04, Math.min(fitH, fitW));
     cam.scale = cam.baseScale;
     cam.y = total / 2;
   }
@@ -104,12 +107,19 @@ window.TrilokaView = (function () {
   function onDrag(dx, dy) { cam.y -= dy / cam.scale; clampCam(); }
 
   /* ---- drawing ---- */
+  // The Brahmanda is drawn as a tall rounded oval (rounded rectangle) so that
+  // every loka band stays full-width — the pointed ends of a pure ellipse used
+  // to pinch Satyaloka and the lowest worlds out of view.
   function eggPath(ctx) {
-    const cx = sx(0), cy = sy(total / 2);
-    const rx = HW * 1.22 * cam.scale;
-    const ry = (total / 2) * 1.05 * cam.scale;
+    const x0 = sx(-HW), x1 = sx(HW), y0 = sy(0), y1 = sy(total);
+    const r = Math.min(48 * cam.scale, (x1 - x0) / 2, (y1 - y0) / 2);
     ctx.beginPath();
-    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+    ctx.moveTo(x0 + r, y0);
+    ctx.arcTo(x1, y0, x1, y1, r);
+    ctx.arcTo(x1, y1, x0, y1, r);
+    ctx.arcTo(x0, y1, x0, y0, r);
+    ctx.arcTo(x0, y0, x1, y0, r);
+    ctx.closePath();
   }
 
   function bandKind(lk, key) {
@@ -129,7 +139,6 @@ window.TrilokaView = (function () {
 
     const cx = sx(0), cy = sy(total / 2);
     const ry = (total / 2) * 1.05 * cam.scale;
-    const rx = HW * 1.22 * cam.scale;
 
     // deep interior atmosphere of the cosmic egg
     const g = ctx.createRadialGradient(cx, cy - ry * 0.2, 10, cx, cy, ry * 1.15);
@@ -185,7 +194,7 @@ window.TrilokaView = (function () {
 
     ctx.restore(); // unclip
 
-    drawEggShell(ctx, cx, cy, rx, ry);
+    drawEggShell(ctx);
     drawTrilokaBracket(ctx, e);
     drawViratAxis(ctx, e);
     drawAxisTags(ctx, e);
@@ -271,20 +280,22 @@ window.TrilokaView = (function () {
     ctx.beginPath(); ctx.moveTo(left + (right - left) * 0.2, by); ctx.lineTo(left + (right - left) * 0.8, by); ctx.stroke();
   }
 
-  function drawEggShell(ctx, cx, cy, rx, ry) {
+  function drawEggShell(ctx) {
     // outer bloom
     ctx.lineWidth = 8; ctx.strokeStyle = "rgba(255,157,46,0.05)";
-    ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
-    // glassy rim with a fresnel-like highlight at the top
-    const grad = ctx.createLinearGradient(0, cy - ry, 0, cy + ry);
+    eggPath(ctx); ctx.stroke();
+    // glassy rim with a fresnel-like top highlight
+    const y0 = sy(0), y1 = sy(total);
+    const grad = ctx.createLinearGradient(0, y0, 0, y1);
     grad.addColorStop(0, "rgba(255,236,190,0.85)");
     grad.addColorStop(0.5, "rgba(255,196,92,0.35)");
     grad.addColorStop(1, "rgba(180,120,40,0.5)");
     ctx.lineWidth = 2; ctx.strokeStyle = grad;
-    ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
-    // top specular arc
-    ctx.lineWidth = 2.5; ctx.strokeStyle = "rgba(255,255,255,0.4)";
-    ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, -Math.PI * 0.72, -Math.PI * 0.28); ctx.stroke();
+    eggPath(ctx); ctx.stroke();
+    // top edge specular
+    ctx.lineWidth = 2.5; ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    const x0 = sx(-HW), x1 = sx(HW), r = Math.min(48 * cam.scale, (x1 - x0) / 2);
+    ctx.beginPath(); ctx.moveTo(x0 + r, y0); ctx.lineTo(x1 - r, y0); ctx.stroke();
   }
 
   function drawLuminaries(ctx, t, e) {

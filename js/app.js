@@ -149,7 +149,11 @@
         `<div class="legend">` +
         THREE_SHAKTIS.map((s) => `<span class="chip" title="${s.note}"><i style="background:${s.color}"></i>${s.name} — ${s.alt}</span>`).join("") +
         `</div>` +
-        `<div class="body" style="margin-top:10px;font-size:0.8rem;color:var(--ink-faint)">Sources: Videos 1, 2 &amp; 5 — &ldquo;Original Creation&rdquo;. New videos extend this automatically.</div>`
+        `<div class="divider"></div><div class="eyebrow">The ten subjects of the Bhagavatam &middot; Video 6</div>` +
+        `<div class="legend">` +
+        BHAGAVATA_TOPICS.map((tp) => `<span class="chip" title="${tp.en}">${tp.name}</span>`).join("") +
+        `</div>` +
+        `<div class="body" style="margin-top:10px;font-size:0.8rem;color:var(--ink-faint)">Sources: Videos 1, 2, 5 &amp; 6 — &ldquo;Original Creation&rdquo;. New videos extend this automatically.</div>`
       );
     }
     if (v.id === "tattvas") {
@@ -180,7 +184,11 @@
         `<div class="legend">` +
         VARNA_BODY.map((v2) => `<span class="chip" title="${v2.role}">${v2.part} → ${v2.order}</span>`).join("") +
         `</div>` +
-        `<div class="body" style="margin-top:10px;font-size:0.8rem;color:var(--ink-dim)">The whole universe is meditated upon as the Lord's body — Satyaloka the head, the heavens the chest, outer space the navel, Patala the soles of the feet (SB 2.1).</div>`
+        `<div class="body" style="margin-top:10px;font-size:0.8rem;color:var(--ink-dim)">The whole universe is meditated upon as the Lord's body — Satyaloka the head, the heavens the chest, outer space the navel, Patala the soles of the feet (SB 2.1).</div>` +
+        `<div class="divider"></div><div class="eyebrow">Senses &amp; presiding deities &middot; Video 6</div>` +
+        `<div class="legend">` +
+        VIRAT_SENSES.map((s) => `<span class="chip" title="${s.desire} → governed by ${s.deity}">${s.organ} → ${s.deity}</span>`).join("") +
+        `</div>`
       );
     }
     return (
