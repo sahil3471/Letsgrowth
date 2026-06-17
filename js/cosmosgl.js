@@ -151,17 +151,17 @@ window.CosmosGL = (function () {
   function init(cnv) {
     canvas = cnv;
     try {
-      gl = cnv.getContext("webgl2", { antialias: false, alpha: false, premultipliedAlpha: false });
+      gl = cnv.getContext("webgl2", { antialias: false, alpha: true, premultipliedAlpha: true });
     } catch (e) { gl = null; }
-    if (!gl) { ok = false; return false; }
+    if (!gl) { ok = false; cnv.style.display = "none"; return false; }
     const vs = compile(gl.VERTEX_SHADER, VERT);
     const fs = compile(gl.FRAGMENT_SHADER, FRAG);
-    if (!vs || !fs) { ok = false; return false; }
+    if (!vs || !fs) { ok = false; cnv.style.display = "none"; return false; }
     prog = gl.createProgram();
     gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
       console.warn("CosmosGL link error:", gl.getProgramInfoLog(prog));
-      ok = false; return false;
+      ok = false; cnv.style.display = "none"; return false;
     }
     vao = gl.createVertexArray();
     const names = ["uRes", "uTime", "uTint", "uNebula", "uLight", "uCount", "uPos", "uR", "uCol", "uType", "uGlow"];
@@ -182,6 +182,8 @@ window.CosmosGL = (function () {
     const dpr = opts.dpr || 1;
     const W = canvas.width, H = canvas.height;
     gl.viewport(0, 0, W, H);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(prog);
     gl.bindVertexArray(vao);
 

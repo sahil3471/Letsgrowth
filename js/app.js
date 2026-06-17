@@ -90,16 +90,21 @@
     if (v === current) return;
     stage.classList.add("switching");
     setTimeout(() => {
-      current = v;
-      navEl.querySelectorAll(".nav-item").forEach((n) =>
-        n.classList.toggle("active", n.dataset.id === v.id)
-      );
-      stageTitle.innerHTML = `<h2>${v.title}</h2><p>${v.subtitle}</p>`;
-      hintEl.textContent = v.hint;
-      pinned = null;
-      renderInfo(null);
-      current.reset(env);
-      stage.classList.remove("switching");
+      try {
+        current = v;
+        navEl.querySelectorAll(".nav-item").forEach((n) =>
+          n.classList.toggle("active", n.dataset.id === v.id)
+        );
+        stageTitle.innerHTML = `<h2>${v.title}</h2><p>${v.subtitle}</p>`;
+        hintEl.textContent = v.hint;
+        pinned = null;
+        renderInfo(null);
+        current.reset(env);
+      } catch (e) {
+        if (window.console) console.error("selectView error:", e);
+      } finally {
+        stage.classList.remove("switching"); // never leave the scene hidden
+      }
     }, 240);
   }
 
@@ -233,6 +238,29 @@
     labelBtn.classList.toggle("active", env.showLabels);
   });
 
+  // optional WebGL "3D cosmos" layer — off by default, enabled on demand so
+  // it can never blank the proven 2D renderer.
+  const glBtn = document.getElementById("glToggle");
+  let glReady = false;
+  if (glBtn) glBtn.addEventListener("click", () => {
+    if (!env.glActive) {
+      if (!glReady) { try { glReady = !!(window.CosmosGL && CosmosGL.init(glCanvas)); } catch (e) { glReady = false; } }
+      if (glReady && CosmosGL.ok) {
+        glCanvas.style.display = "block";
+        env.glActive = true;
+        CosmosGL.resize(env.w, env.h, dpr);
+        glBtn.classList.add("active");
+      } else {
+        glBtn.textContent = "3D unavailable";
+        glBtn.disabled = true;
+      }
+    } else {
+      env.glActive = false;
+      glCanvas.style.display = "none";
+      glBtn.classList.remove("active");
+    }
+  });
+
   /* ---- epigraph rotation ---- */
   const epi = document.getElementById("epigraph");
   let epiIdx = 0;
@@ -244,44 +272,48 @@
     epiIdx++;
   }
 
-  /* ---- main loop ---- */
+  /* ---- main loop (hardened: a frame error can never stop animation) ---- */
   let t0 = performance.now(), tAnim = 0;
   function loop(now) {
     const dt = now - t0; t0 = now;
     if (env.animating) tAnim += dt;
-    current.draw(ctx, env, tAnim);
+    try {
+      current.draw(ctx, env, tAnim);
 
-    // WebGL cosmos (background + 3D bodies) renders behind the 2D scene
-    if (env.glActive) {
-      CosmosGL.render({
-        time: tAnim,
-        tint: current.glTint || [0.45, 0.34, 0.66],
-        nebula: current.glNebula == null ? 1.0 : current.glNebula,
-        bodies: current.glBodies || [],
-        dpr: dpr,
-      });
+      if (env.glActive) {
+        try {
+          CosmosGL.render({
+            time: tAnim,
+            tint: current.glTint || [0.45, 0.34, 0.66],
+            nebula: current.glNebula == null ? 1.0 : current.glNebula,
+            bodies: current.glBodies || [],
+            dpr: dpr,
+          });
+        } catch (e) {
+          env.glActive = false;
+          if (glCanvas) glCanvas.style.display = "none";
+          if (glBtn) glBtn.classList.remove("active");
+        }
+      }
+      applyBloom();
+
+      if (mouse.inside && !dragging) {
+        const info = current.hitTest(mouse.x, mouse.y);
+        showTooltip(info, mouse.x + canvas.getBoundingClientRect().left, mouse.y + canvas.getBoundingClientRect().top);
+        if (!pinned) renderInfo(info || null);
+      }
+
+      scaleReadout.textContent =
+        "1 yojana = 8 miles · scale schematic · Bhu-mandala \u2300 " +
+        BHUMANDALA_DIAMETER_YOJANAS.toLocaleString("en-US") + " yojanas";
+    } catch (err) {
+      if (window.console) console.error("Render frame error (continuing):", err);
     }
-    applyBloom();
-
-    // hover hit-test (only when not dragging)
-    if (mouse.inside && !dragging) {
-      const info = current.hitTest(mouse.x, mouse.y);
-      showTooltip(info, mouse.x + canvas.getBoundingClientRect().left, mouse.y + canvas.getBoundingClientRect().top);
-      if (info && !pinned) renderInfo(info);
-      if (!info && !pinned) renderInfo(null);
-    }
-
-    scaleReadout.textContent =
-      "1 yojana = 8 miles · scale schematic · Bhu-mandala \u2300 " +
-      BHUMANDALA_DIAMETER_YOJANAS.toLocaleString("en-US") + " yojanas";
     requestAnimationFrame(loop);
   }
 
   /* ---- boot ---- */
   function boot() {
-    if (glCanvas && window.CosmosGL) {
-      try { env.glActive = CosmosGL.init(glCanvas); } catch (e) { env.glActive = false; }
-    }
     buildNav();
     stageTitle.innerHTML = `<h2>${current.title}</h2><p>${current.subtitle}</p>`;
     hintEl.textContent = current.hint;

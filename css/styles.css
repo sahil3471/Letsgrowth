@@ -158,7 +158,7 @@ nav {
   background: radial-gradient(120% 120% at 50% 45%, transparent 52%, rgba(3,2,8,0.55) 100%);
 }
 .stage canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
-#cosmosgl { z-index: 0; }
+#cosmosgl { z-index: 0; display: none; }
 #scene { z-index: 1; cursor: grab; }
 #scene:active { cursor: grabbing; }
 
