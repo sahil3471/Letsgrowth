@@ -19,8 +19,8 @@ window.CreationView = (function () {
   let bubbles = [];
 
   // world anchor points
-  const KRISHNA = { x: 250, y: 150 };
-  const VISHNU = { x: 330, y: 470, r: 150 };
+  const KRISHNA = { x: 250, y: 185 };
+  const VISHNU = { x: 350, y: 500, r: 150 };
   const OURUNI = { x: 905, y: 312, r: 30 };
   const EGG = { x: 1240, y: 470, rx: 200, ry: 270 };
 
@@ -59,7 +59,7 @@ window.CreationView = (function () {
 
   /* quadratic bezier for the stream path */
   function streamPoint(p) {
-    const S = { x: VISHNU.x + 110, y: VISHNU.y - 10 }, C = { x: 640, y: 540 }, E = { x: 980, y: 280 };
+    const S = { x: VISHNU.x + 150, y: VISHNU.y - 30 }, C = { x: 660, y: 540 }, E = { x: 980, y: 280 };
     const u = 1 - p;
     return {
       x: u * u * S.x + 2 * u * p * C.x + p * p * E.x,
@@ -93,20 +93,22 @@ window.CreationView = (function () {
 
     drawRatioBar(ctx, e);
 
-    // --- Sri Krishna source + descending beam ---
-    const kx = sx(KRISHNA.x), ky = sy(KRISHNA.y);
+    // --- Sri Krishna in Goloka + descending beam to Maha-Vishnu ---
+    const kx = sx(KRISHNA.x), ky = sy(KRISHNA.y), ks = ss(82);
+    drawGolokaRealm(ctx, kx, ky, ks, t);
     const beam = ctx.createLinearGradient(kx, ky, sx(VISHNU.x), sy(VISHNU.y));
-    beam.addColorStop(0, "rgba(255,225,150,0.5)"); beam.addColorStop(1, "rgba(120,150,255,0)");
-    ctx.strokeStyle = beam; ctx.lineWidth = ss(10); ctx.beginPath(); ctx.moveTo(kx, ky); ctx.lineTo(sx(VISHNU.x), sy(VISHNU.y)); ctx.stroke();
-    GFX.glow(ctx, kx, ky, ss(46), "#ffe7a0", 0.8);
-    ctx.fillStyle = "#fff6da"; ctx.beginPath(); ctx.arc(kx, ky, ss(13), 0, Math.PI * 2); ctx.fill();
-    regions.push({ type: "circle", cx: kx, cy: ky, r: ss(28), info: hierInfo("krishna", "The source of all"), pr: 5 });
-    label(ctx, e, "Sri Krishna · Goloka", kx, ky - ss(34), "center");
+    beam.addColorStop(0, "rgba(255,225,150,0.40)"); beam.addColorStop(1, "rgba(120,150,255,0)");
+    ctx.strokeStyle = beam; ctx.lineWidth = ss(8);
+    ctx.beginPath(); ctx.moveTo(kx, ky + ks * 0.9); ctx.lineTo(sx(VISHNU.x), sy(VISHNU.y) - ss(70)); ctx.stroke();
+    drawKrishna(ctx, kx, ky, ks, t);
+    regions.push({ type: "circle", cx: kx, cy: ky, r: ks, info: hierInfo("krishna", "The source of all"), pr: 5 });
+    label(ctx, e, "Sri Krishna · Goloka Vrindavana", kx, ky - ks * 1.08, "center");
 
-    // --- Maha-Vishnu reclining on the Causal Ocean (radiant presence) ---
-    drawDivinePresence(ctx, sx(VISHNU.x), sy(VISHNU.y), ss(VISHNU.r) * (0.94 + 0.1 * breath), "#9fb4ff", "#ffe6a8");
-    regions.push({ type: "circle", cx: sx(VISHNU.x), cy: sy(VISHNU.y), r: ss(VISHNU.r) * 0.8, info: hierInfo("mahavishnu", "First purusha-avatar"), pr: 4 });
-    label(ctx, e, "Maha-Vishnu — on the Causal Ocean", sx(VISHNU.x), sy(VISHNU.y) + ss(VISHNU.r) * 0.78 + 16, "center");
+    // --- Maha-Vishnu reclining on Ananta-Shesha upon the Causal Ocean ---
+    const vs = ss(VISHNU.r) * 0.8 * (0.97 + 0.06 * breath);
+    drawRecliningVishnu(ctx, sx(VISHNU.x), sy(VISHNU.y), vs, t, { hoods: 7 });
+    regions.push({ type: "ellipse", cx: sx(VISHNU.x), cy: sy(VISHNU.y), rx: vs * 1.7, ry: vs * 0.95, info: hierInfo("mahavishnu", "First purusha-avatar"), pr: 4 });
+    label(ctx, e, "Maha-Vishnu — reclining on the Causal Ocean", sx(VISHNU.x), sy(VISHNU.y) + vs * 0.88 + 16, "center");
 
     // --- exhaled universes streaming out ---
     drawUniverseStream(ctx, t, breath, e);
@@ -130,20 +132,132 @@ window.CreationView = (function () {
       sx(W0 / 2), sy(H0) - 6, "center", "rgba(210,200,180,0.55)", "italic 12px Georgia, serif");
   }
 
-  function drawDivinePresence(ctx, x, y, r, c1, c2) {
-    GFX.glow(ctx, x, y, r * 1.9, c1, 0.5);
-    GFX.glow(ctx, x, y, r * 1.2, c2, 0.6);
-    // reclining mandorla (abstract, horizontal)
-    ctx.save(); ctx.translate(x, y); ctx.scale(1.5, 1);
-    const g = ctx.createRadialGradient(0, 0, r * 0.1, 0, 0, r);
-    g.addColorStop(0, "rgba(255,248,224,0.95)");
-    g.addColorStop(0.4, "rgba(220,210,255,0.55)");
-    g.addColorStop(1, "rgba(150,170,255,0)");
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+  /* small geometry helpers for the luminous figures */
+  function ell(ctx, x, y, rx, ry, rot, color) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot || 0);
+    ctx.fillStyle = color; ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
-    // halo rings
-    ctx.strokeStyle = "rgba(255,236,180,0.35)"; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.ellipse(x, y, r * 1.5, r, 0, 0, Math.PI * 2); ctx.stroke();
+  }
+  function capsule(ctx, x1, y1, x2, y2, w, color) {
+    ctx.strokeStyle = color; ctx.lineCap = "round"; ctx.lineWidth = w;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  }
+
+  /* The golden self-effulgent realm of Goloka behind Krishna */
+  function drawGolokaRealm(ctx, kx, ky, s, t) {
+    GFX.glow(ctx, kx, ky, 2.4 * s, "#ffcf6a", 0.40);
+    GFX.glow(ctx, kx, ky, 1.4 * s, "#fff3cf", 0.45);
+    ctx.strokeStyle = "rgba(255,228,150,0.16)"; ctx.lineWidth = 1;
+    for (let i = 1; i <= 3; i++) { ctx.beginPath(); ctx.arc(kx, ky, s * (0.95 + i * 0.42), 0, Math.PI * 2); ctx.stroke(); }
+    for (let i = 0; i < 12; i++) {
+      const a = i * 2.4 + t * 0.0003, rr = s * (1.05 + (i % 3) * 0.38);
+      const mx = kx + Math.cos(a) * rr, my = ky + Math.sin(a) * rr * 0.7;
+      ctx.fillStyle = "rgba(255,242,196," + (0.25 + 0.3 * Math.sin(t * 0.002 + i)) + ")";
+      ctx.beginPath(); ctx.arc(mx, my, 1.6, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  /* Sri Krishna — luminous tribhanga silhouette with flute & peacock crown */
+  function drawKrishna(ctx, cx, cy, s, t) {
+    const body = "#3a4790", bodyHi = "#7184d8", gold = "#ffd676", goldHi = "#fff0c0";
+    const sway = Math.sin(t * 0.0009) * 0.02 * s;
+    const P = (dx, dy) => [cx + dx * s, cy + dy * s];
+    // legs (tribhanga, crossed at the ankle)
+    capsule(ctx, ...P(0.0, 0.92), ...P(0.07, 0.22), 0.15 * s, body);
+    capsule(ctx, ...P(0.07, 0.22), ...P(-0.22, 0.92), 0.14 * s, body);
+    ell(ctx, cx - 0.24 * s, cy + 0.93 * s, 0.1 * s, 0.06 * s, 0.25, body);
+    ell(ctx, cx + 0.02 * s, cy + 0.93 * s, 0.1 * s, 0.06 * s, -0.1, body);
+    // dhoti (gold)
+    ell(ctx, cx - 0.02 * s, cy + 0.30 * s, 0.24 * s, 0.2 * s, 0.05, gold);
+    ctx.globalAlpha = 0.5; ell(ctx, cx - 0.06 * s, cy + 0.26 * s, 0.12 * s, 0.1 * s, 0.05, goldHi); ctx.globalAlpha = 1;
+    // torso (bent left for tribhanga)
+    ell(ctx, cx - 0.05 * s, cy - 0.05 * s, 0.18 * s, 0.3 * s, 0.08, body);
+    ctx.globalAlpha = 0.45; ell(ctx, cx - 0.11 * s, cy - 0.04 * s, 0.07 * s, 0.22 * s, 0.08, bodyHi); ctx.globalAlpha = 1;
+    // shoulders
+    ell(ctx, cx + 0.0 * s, cy - 0.34 * s, 0.2 * s, 0.12 * s, 0, body);
+    // arms raised, hands meeting at the flute by the mouth
+    capsule(ctx, ...P(0.15, -0.32), ...P(0.3, -0.52), 0.08 * s, body);
+    capsule(ctx, ...P(0.3, -0.52), ...P(0.17, -0.64), 0.07 * s, body);
+    capsule(ctx, ...P(-0.15, -0.32), ...P(-0.02, -0.52), 0.08 * s, body);
+    capsule(ctx, ...P(-0.02, -0.52), ...P(0.11, -0.64), 0.07 * s, body);
+    // flute
+    capsule(ctx, ...P(-0.06, -0.64), ...P(0.52, -0.5), 0.045 * s, goldHi);
+    // neck + head
+    capsule(ctx, ...P(0.0, -0.5), ...P(0.02, -0.62), 0.09 * s, body);
+    ell(ctx, cx + 0.02 * s, cy - 0.72 * s, 0.13 * s, 0.15 * s, 0, body);
+    ctx.globalAlpha = 0.5; ell(ctx, cx - 0.02 * s, cy - 0.74 * s, 0.05 * s, 0.08 * s, 0, bodyHi); ctx.globalAlpha = 1;
+    // peacock crown
+    peacockCrown(ctx, cx + 0.02 * s + sway, cy - 0.86 * s, s);
+    // golden rim halo around the head
+    ctx.strokeStyle = "rgba(255,224,150,0.5)"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(cx + 0.02 * s, cy - 0.72 * s, 0.2 * s, 0, Math.PI * 2); ctx.stroke();
+  }
+
+  function peacockCrown(ctx, x, y, s) {
+    const feathers = 5;
+    for (let i = 0; i < feathers; i++) {
+      const a = (-1 + 2 * i / (feathers - 1)) * 0.7;
+      ctx.save(); ctx.translate(x, y); ctx.rotate(a);
+      capsule(ctx, 0, 0, 0, -0.34 * s, 0.03 * s, "#2f8f6a");
+      ctx.fillStyle = "#1f9bd0"; ctx.beginPath(); ctx.ellipse(0, -0.37 * s, 0.05 * s, 0.09 * s, 0, 0, Math.PI * 2); ctx.fill();
+      GFX.glow(ctx, 0, -0.37 * s, 0.05 * s, "#8be0ff", 0.6);
+      ctx.fillStyle = "#1c5a3a"; ctx.beginPath(); ctx.arc(0, -0.37 * s, 0.024 * s, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+    ctx.fillStyle = "#ffd676"; ctx.beginPath(); ctx.ellipse(x, y + 0.02 * s, 0.14 * s, 0.05 * s, 0, 0, Math.PI * 2); ctx.fill();
+  }
+
+  /* Maha-Vishnu / Garbhodakasayi reclining on the many-hooded serpent Ananta-Shesha */
+  function drawRecliningVishnu(ctx, cx, cy, s, t, opts) {
+    opts = opts || {};
+    const body = opts.bodyC || "#cfe0ff", bodyHi = opts.bodyHi || "#ffffff";
+    const serpent = opts.serpentC || "#2f7d86", serpentHi = opts.serpentHi || "#63cccc";
+    const crownC = opts.crownC || "#ffd56a", glowC = opts.glowC || "#9fc4ff";
+    const hoods = opts.hoods || 5;
+    const P = (dx, dy) => [cx + dx * s, cy + dy * s];
+
+    GFX.glow(ctx, cx, cy - 0.05 * s, 2.0 * s, glowC, 0.42);
+    GFX.glow(ctx, cx, cy + 0.62 * s, 1.5 * s, glowC, 0.16); // reflection on the water
+
+    // serpent couch (coils)
+    for (let i = -1; i <= 1; i++) ell(ctx, cx + i * 0.62 * s, cy + 0.52 * s, 0.72 * s, 0.27 * s, 0, serpent);
+    ctx.globalAlpha = 0.5;
+    for (let i = -1; i <= 1; i++) ell(ctx, cx + i * 0.62 * s, cy + 0.42 * s, 0.6 * s, 0.11 * s, 0, serpentHi);
+    ctx.globalAlpha = 1;
+    // serpent neck
+    capsule(ctx, ...P(-1.2, 0.5), ...P(-1.5, -0.3), 0.2 * s, serpent);
+    // fan of hoods forming a canopy over the head
+    const hx = cx - 1.5 * s, hy = cy - 0.48 * s;
+    for (let k = 0; k < hoods; k++) {
+      const a = (-1 + 2 * k / (hoods - 1)) * 0.72;
+      ctx.save(); ctx.translate(hx, hy); ctx.rotate(a);
+      ctx.fillStyle = serpent; ctx.beginPath(); ctx.ellipse(0, -0.34 * s, 0.14 * s, 0.32 * s, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 0.6; ctx.fillStyle = serpentHi; ctx.beginPath(); ctx.ellipse(0, -0.4 * s, 0.06 * s, 0.16 * s, 0, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+      GFX.glow(ctx, 0, -0.18 * s, 0.07 * s, "#bff0ff", 0.8); // hood-jewel
+      ctx.restore();
+    }
+
+    // reclining deity body (assembled from luminous parts)
+    ell(ctx, cx - 0.1 * s, cy + 0.12 * s, 0.6 * s, 0.22 * s, -0.12, body);   // torso
+    ell(ctx, cx + 0.4 * s, cy + 0.16 * s, 0.26 * s, 0.2 * s, 0, body);       // hips
+    ell(ctx, cx - 0.55 * s, cy + 0.02 * s, 0.26 * s, 0.22 * s, 0, body);     // chest
+    capsule(ctx, ...P(0.4, 0.16), ...P(0.95, 0.26), 0.22 * s, body);          // thigh
+    capsule(ctx, ...P(0.95, 0.26), ...P(1.5, 0.34), 0.18 * s, body);          // shin
+    ell(ctx, cx + 1.5 * s, cy + 0.34 * s, 0.12 * s, 0.09 * s, 0.3, body);    // feet
+    capsule(ctx, ...P(-0.55, 0.05), ...P(-1.02, 0.42), 0.13 * s, body);       // upper arm
+    capsule(ctx, ...P(-1.02, 0.42), ...P(-0.93, 0.12), 0.12 * s, body);       // forearm
+    ell(ctx, cx - 0.9 * s, cy + 0.08 * s, 0.1 * s, 0.1 * s, 0, body);        // resting hand
+    GFX.glow(ctx, cx - 0.95 * s, cy - 0.12 * s, 0.44 * s, crownC, 0.8);        // halo
+    ell(ctx, cx - 0.95 * s, cy - 0.12 * s, 0.24 * s, 0.26 * s, 0, body);     // head
+    // highlights
+    ctx.globalAlpha = 0.5; ell(ctx, cx - 0.2 * s, cy + 0.02 * s, 0.4 * s, 0.11 * s, -0.12, bodyHi);
+    ell(ctx, cx - 1.0 * s, cy - 0.18 * s, 0.08 * s, 0.1 * s, 0, bodyHi); ctx.globalAlpha = 1;
+    // crown
+    ctx.fillStyle = crownC;
+    ctx.beginPath(); ctx.moveTo(...P(-1.12, -0.28)); ctx.lineTo(...P(-0.95, -0.56)); ctx.lineTo(...P(-0.78, -0.28)); ctx.closePath(); ctx.fill();
+    // attributes as light glints (conch, lotus)
+    GFX.glow(ctx, cx - 0.2 * s, cy - 0.1 * s, 0.1 * s, "#fff0d0", 0.8);
+    GFX.glow(ctx, cx + 0.15 * s, cy - 0.14 * s, 0.09 * s, "#ffd0e0", 0.7);
   }
 
   function drawUniverseStream(ctx, t, breath, e) {
@@ -208,8 +322,8 @@ window.CreationView = (function () {
     GFX.tile(ctx, GFX.noiseTile("oceanTile", 160, 10, 4), cx - rx, oy0, cx + rx, cy + ry, (t * 0.012) % 160, 0);
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over"; ctx.restore();
 
-    // Garbhodakasayi Vishnu presence on the ocean
-    drawDivinePresence(ctx, cx, oy0 + ry * 0.22, rx * 0.42 * (0.95 + 0.1 * breath), "#7fd0ff", "#ffe6b0");
+    // Garbhodakasayi Vishnu reclining on the Garbhodaka ocean
+    drawRecliningVishnu(ctx, cx, oy0 + ry * 0.14, rx * 0.32 * (0.97 + 0.06 * breath), t, { hoods: 5, glowC: "#7fd0ff" });
 
     // lotus stem from navel rising to Brahma
     const lotusY = cy - ry * 0.58;
