@@ -47,7 +47,7 @@
       bctx.filter = "none";
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
-      ctx.globalAlpha = 0.34;
+      ctx.globalAlpha = 0.22;
       ctx.filter = "blur(2px)";
       ctx.drawImage(bloomCv, 0, 0, bw, bh, 0, 0, env.w, env.h);
       ctx.restore();

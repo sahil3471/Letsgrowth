@@ -13,6 +13,7 @@
 window.TrilokaView = (function () {
   const GFX = window.GFX;
   const HW = 330;            // half-width of the world column (world units)
+  const DISC_HW = 150;       // half-width of each loka disc (narrower than the column)
   let bands = [];            // ordered band layout
   let total = 0;             // total world height
   let lumis = [];            // luminary placements
@@ -25,10 +26,10 @@ window.TrilokaView = (function () {
   /* ---- build the stacked layout (top -> bottom) ---- */
   function build() {
     const order = [
-      ["satya", 64], ["tapas", 56], ["jana", 56], ["mahar", 58],
-      ["svar", 248], ["bhuvar", 78], ["bhu", 30],
-      ["atala", 30], ["vitala", 30], ["sutala", 30], ["talatala", 30],
-      ["mahatala", 30], ["rasatala", 30], ["patala", 32],
+      ["satya", 50], ["tapas", 50], ["jana", 50], ["mahar", 52],
+      ["svar", 150], ["bhuvar", 64], ["bhu", 48],
+      ["atala", 46], ["vitala", 46], ["sutala", 46], ["talatala", 46],
+      ["mahatala", 46], ["rasatala", 46], ["patala", 48],
     ];
     bands = [];
     let y = 0;
@@ -39,7 +40,7 @@ window.TrilokaView = (function () {
     }
     // Garbhodaka ocean / Ananta-Sesha at the very base
     bands.push({
-      key: "garbhodaka", y0: y, y1: y + 74, h: 74,
+      key: "garbhodaka", y0: y, y1: y + 58, h: 58,
       loka: {
         name: "Garbhodaka Ocean", altName: "& Ananta-Sesha",
         color: "#1b3a52", group: "base", triloka: false,
@@ -49,7 +50,7 @@ window.TrilokaView = (function () {
         reference: "SB 5.25",
       },
     });
-    y += 74;
+    y += 58;
     total = y;
     svarBand = bands.find((b) => b.key === "svar");
     placeLuminaries();
@@ -67,7 +68,7 @@ window.TrilokaView = (function () {
       return {
         data: l,
         wy: bottom - f * (bottom - topY),
-        amp: 60 + (i % 3) * 34,
+        amp: 30 + (i % 3) * 22,
         spd: 0.00018 + (i % 5) * 0.00006,
         ph: i * 1.7,
       };
@@ -142,13 +143,13 @@ window.TrilokaView = (function () {
 
     // soft column aura (no bordered shape around the worlds)
     const g = ctx.createRadialGradient(cx, cy, 10, cx, cy, Math.max(ry * 1.1, HW * cam.scale * 1.5));
-    g.addColorStop(0, "rgba(44,32,66,0.34)");
-    g.addColorStop(0.7, "rgba(18,13,30,0.22)");
+    g.addColorStop(0, "rgba(40,30,60,0.18)");
+    g.addColorStop(0.7, "rgba(16,12,26,0.10)");
     g.addColorStop(1, "rgba(6,5,14,0)");
     ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
 
     // central axis line linking the discs (the Meru axis / cosmic column)
-    ctx.strokeStyle = "rgba(255,210,140,0.14)"; ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(255,210,140,0.10)"; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(cx, sy(0)); ctx.lineTo(cx, sy(total)); ctx.stroke();
 
     // each loka rendered as a flat round disc, stacked vertically
@@ -174,50 +175,45 @@ window.TrilokaView = (function () {
     const lk = b.loka, kind = bandKind(lk, b.key);
     const y0 = sy(b.y0), y1 = sy(b.y1);
     const cxB = sx(0), cyB = (y0 + y1) / 2;
-    const rxD = HW * cam.scale;
-    const ryD = Math.max(5, Math.min((y1 - y0) * 0.42, rxD * 0.17));
+    const rxD = DISC_HW * cam.scale;
+    const ryD = Math.max(4, Math.min((y1 - y0) * 0.34, rxD * 0.16));
     const isBhu = b.key === "bhu";
-    const faint = kind === "space" ? 0.32 : 1;
-    const th = Math.max(3, ryD * 0.7);
+    const faint = kind === "space" ? 0.4 : 1;
+    const th = Math.max(2, ryD * 0.6);
 
     // clickable strip (full width of the band) for easy interaction
     regions.push({ type: "rect", x: cxB - rxD, y: y0, w: rxD * 2, h: Math.max(1, y1 - y0), info: lokaInfo(lk) });
 
-    GFX.glow(ctx, cxB, cyB, rxD * 0.85, lk.color, isBhu ? 0.32 : 0.12 * faint);
-
-    // underside / rim — gives the disc its thickness
-    ctx.fillStyle = rgba(lk.color, -34, 0.9 * faint);
+    // underside / rim — gives the disc a little thickness
+    ctx.fillStyle = rgba(lk.color, -40, 0.85 * faint);
     ellipsePath(ctx, cxB, cyB + th, rxD, ryD); ctx.fill();
 
-    // top surface
-    const grad = ctx.createRadialGradient(cxB - rxD * 0.25, cyB - ryD, ryD * 0.4, cxB, cyB, rxD);
-    grad.addColorStop(0, rgba(lk.color, 28, 0.98 * faint));
-    grad.addColorStop(0.7, rgba(lk.color, 0, 0.92 * faint));
-    grad.addColorStop(1, rgba(lk.color, -18, 0.86 * faint));
+    // top surface (muted)
+    const grad = ctx.createRadialGradient(cxB - rxD * 0.3, cyB - ryD, ryD * 0.3, cxB, cyB, rxD);
+    grad.addColorStop(0, rgba(lk.color, 12, 0.9 * faint));
+    grad.addColorStop(0.7, rgba(lk.color, -8, 0.84 * faint));
+    grad.addColorStop(1, rgba(lk.color, -26, 0.8 * faint));
     ctx.fillStyle = grad; ellipsePath(ctx, cxB, cyB, rxD, ryD); ctx.fill();
 
     drawDiscTexture(ctx, cxB, cyB, rxD, ryD, kind, t);
 
-    // top-edge highlight
-    ctx.lineWidth = 1.2; ctx.strokeStyle = rgba("#fff3d6", 0, faint < 1 ? 0.15 : 0.4);
-    ctx.beginPath(); ctx.ellipse(cxB, cyB, rxD, ryD, 0, Math.PI * 1.04, Math.PI * 1.96); ctx.stroke();
+    // subtle top-edge highlight
+    ctx.lineWidth = 1; ctx.strokeStyle = rgba("#fff3d6", 0, faint < 1 ? 0.12 : 0.26);
+    ctx.beginPath(); ctx.ellipse(cxB, cyB, rxD, ryD, 0, Math.PI * 1.06, Math.PI * 1.94); ctx.stroke();
     if (isBhu) {
-      ctx.strokeStyle = "rgba(255,226,150,0.9)"; ctx.lineWidth = 2;
+      GFX.glow(ctx, cxB, cyB, rxD * 0.7, "#ffcf7a", 0.28);
+      ctx.strokeStyle = "rgba(255,224,150,0.8)"; ctx.lineWidth = 1.6;
       ellipsePath(ctx, cxB, cyB, rxD, ryD); ctx.stroke();
-      GFX.glow(ctx, cxB, cyB, rxD * 0.6, "#ffd27a", 0.4);
     }
 
+    // label sits in the left margin, clear of the disc
     if (e.showLabels) {
       ctx.save();
-      ctx.shadowColor = "rgba(0,0,0,0.85)"; ctx.shadowBlur = 6;
-      ctx.fillStyle = isBhu ? "#fff4d8" : "rgba(248,240,224,0.95)";
-      ctx.font = "600 13px Georgia, 'Times New Roman', serif"; ctx.textAlign = "left";
-      ctx.fillText(lk.name, cxB - rxD + 14, cyB + 4);
+      ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 4;
+      ctx.fillStyle = isBhu ? "#ffe6ad" : "rgba(228,221,206,0.92)";
+      ctx.font = "600 12px Georgia, 'Times New Roman', serif"; ctx.textAlign = "right";
+      ctx.fillText(lk.name, cxB - rxD - 12, cyB + 4);
       ctx.restore();
-      if (lk.altName) {
-        ctx.fillStyle = "rgba(210,200,178,0.65)"; ctx.font = "italic 11px Georgia, serif"; ctx.textAlign = "right";
-        ctx.fillText(lk.altName, cxB + rxD - 12, cyB + 4);
-      }
     }
   }
 
@@ -334,7 +330,7 @@ window.TrilokaView = (function () {
   }
 
   function drawLuminaries(ctx, t, e) {
-    const sizeF = Math.min(1.5, cam.scale / cam.baseScale + 0.4);
+    const sizeF = (Math.min(1.0, cam.scale / cam.baseScale * 0.55 + 0.42)) * 0.78;
     for (const L of lumis) {
       const wx = Math.sin(t * L.spd + L.ph) * L.amp;
       const x = sx(wx), y = sy(L.wy);
@@ -348,11 +344,11 @@ window.TrilokaView = (function () {
 
       regions.push({ type: "circle", cx: x, cy: y, r: r * 1.6 + 6, info: lumiInfo(L.data) });
 
-      if (e.showLabels && cam.scale > cam.baseScale * 0.85) {
+      if (e.showLabels && cam.scale > cam.baseScale * 1.1) {
         ctx.save();
         ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 5;
-        ctx.fillStyle = "rgba(255,246,222,0.92)";
-        ctx.font = "11px Inter, system-ui, sans-serif"; ctx.textAlign = "left";
+        ctx.fillStyle = "rgba(255,246,222,0.85)";
+        ctx.font = "10px Inter, system-ui, sans-serif"; ctx.textAlign = "left";
         ctx.fillText(L.data.name, x + r * 1.6 + 6, y + 3);
         ctx.restore();
       }
