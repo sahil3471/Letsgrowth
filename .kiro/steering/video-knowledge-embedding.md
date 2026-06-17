@@ -63,3 +63,12 @@ ones.
   karma. Added `AHANKARA_DIVISION`, `SENSE_DEITIES`, `ELEMENTS`,
   `GUNA_AVATARAS` and the new **Elements view** (`js/elements.js`) — an
   interactive Sankhya emanation tree.
+- **Video 4 — “Original Creation, Part 4.”** The Virata-rupa: the single
+  universe as the Lord's body (Satyaloka the head … Patala the soles, SB 2.1),
+  distinct from the Vishva-rupa of BG 11; the four varnas from that body; the
+  three vyahritis of the Gayatri; the Shishumara wheel of stars on Dhruva
+  (SB 5.23); and Vaikuntha realms within the egg. Added per-loka `viratPart`
+  and the upper-loka `distance` figures (Mahar/Jana/Tapa/Satya = +10/20/80/120
+  million yojanas), `VARNA_BODY`, five new CONCEPTS, and surfaced it in the
+  Fourteen-Worlds view (right-side Virata axis, Shishumara wheel, body-part &
+  distance facts, varna legend).

@@ -167,11 +167,16 @@
       return (
         `<div class="divider"></div><div class="eyebrow">Legend</div>` +
         `<div class="legend">` +
-        `<span class="chip"><i style="background:#ffb347"></i>Triloka (3 worlds)</span>` +
+        `<span class="chip"><i style="background:#ffb347"></i>Triloka — Bhur·Bhuvah·Svah</span>` +
         `<span class="chip"><i style="background:#ffd28a"></i>Higher worlds</span>` +
         `<span class="chip"><i style="background:#8a583e"></i>Lower worlds</span>` +
         `<span class="chip"><i style="background:#ffd35c"></i>Jyotir-chakra</span>` +
-        `</div>`
+        `</div>` +
+        `<div class="divider"></div><div class="eyebrow">The Virata-rupa &middot; Video 4</div>` +
+        `<div class="legend">` +
+        VARNA_BODY.map((v2) => `<span class="chip" title="${v2.role}">${v2.part} → ${v2.order}</span>`).join("") +
+        `</div>` +
+        `<div class="body" style="margin-top:10px;font-size:0.8rem;color:var(--ink-dim)">The whole universe is meditated upon as the Lord's body — Satyaloka the head, the heavens the chest, outer space the navel, Patala the soles of the feet (SB 2.1).</div>`
       );
     }
     return (

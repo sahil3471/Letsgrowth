@@ -19,6 +19,7 @@ window.TrilokaView = (function () {
   let svarBand = null;
   const cam = { scale: 1, y: 0, baseScale: 1 };
   let regions = [];          // screen-space hit regions, rebuilt each frame
+  let dhruvaScreen = null;    // tracked position of Dhruvaloka (Shishumara pivot)
   let env = { w: 0, h: 0 };
 
   /* ---- build the stacked layout (top -> bottom) ---- */
@@ -179,13 +180,45 @@ window.TrilokaView = (function () {
 
     drawBhuPlane(ctx, left, right);
     drawLuminaries(ctx, t, e);
+    drawShishumara(ctx, t, e);
     drawMeru(ctx, t);
 
     ctx.restore(); // unclip
 
     drawEggShell(ctx, cx, cy, rx, ry);
     drawTrilokaBracket(ctx, e);
+    drawViratAxis(ctx, e);
     drawAxisTags(ctx, e);
+  }
+
+  function drawShishumara(ctx, t, e) {
+    if (!dhruvaScreen) return;
+    const rr = 64 * cam.scale;
+    ctx.save();
+    ctx.translate(dhruvaScreen.x, dhruvaScreen.y); ctx.rotate(t * 0.00018);
+    ctx.strokeStyle = "rgba(180,210,255,0.22)"; ctx.lineWidth = 1.2; ctx.setLineDash([3, 7]);
+    ctx.beginPath(); ctx.ellipse(0, 0, rr, rr * 0.42, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0, 0, rr * 0.6, rr * 0.25, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]); ctx.restore();
+    if (e.showLabels && cam.scale > cam.baseScale * 0.9) {
+      ctx.fillStyle = "rgba(180,210,255,0.7)"; ctx.font = "italic 10px Georgia, serif"; ctx.textAlign = "center";
+      ctx.fillText("Shishumara-chakra", dhruvaScreen.x, dhruvaScreen.y - rr * 0.42 - 6);
+    }
+  }
+
+  function drawViratAxis(ctx, e) {
+    const satya = bands[0], patala = bands.find((b) => b.key === "patala");
+    if (!satya || !patala) return;
+    const x = sx(HW) + 14, yTop = sy(satya.y0), yBot = sy(patala.y1);
+    if (yBot < 10 || yTop > e.h - 10) return;
+    ctx.strokeStyle = "rgba(150,200,255,0.7)"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x - 8, yTop); ctx.lineTo(x, yTop); ctx.lineTo(x, yBot); ctx.lineTo(x - 8, yBot); ctx.stroke();
+    ctx.fillStyle = "rgba(190,215,255,0.85)"; ctx.font = "9px Inter, system-ui, sans-serif"; ctx.textAlign = "left";
+    const anchor = (key, txt) => { const b = bands.find((z) => z.key === key); if (!b) return; const yy = sy((b.y0 + b.y1) / 2); if (yy > yTop + 4 && yy < yBot - 4) ctx.fillText(txt, x + 5, yy + 3); };
+    anchor("satya", "Head"); anchor("svar", "Chest"); anchor("bhuvar", "Navel"); anchor("patala", "Feet");
+    ctx.save(); ctx.translate(x + 26, (yTop + yBot) / 2); ctx.rotate(Math.PI / 2);
+    ctx.fillStyle = "rgba(150,200,255,0.95)"; ctx.font = "700 11px Inter, system-ui, sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("THE VIRATA-RUPA", 0, 0); ctx.restore();
   }
 
   function drawBandTexture(ctx, left, y0, bw, hgt, kind, t) {
@@ -263,7 +296,7 @@ window.TrilokaView = (function () {
       const rd = L.data.render || { type: "rocky" };
 
       if (rd.type === "sun") GFX.drawSun(ctx, x, y, r, t);
-      else if (rd.type === "star") GFX.drawStar(ctx, x, y, r, t);
+      else if (rd.type === "star") { GFX.drawStar(ctx, x, y, r, t); dhruvaScreen = { x: x, y: y, r: r }; }
       else if (rd.type === "cluster") drawCluster(ctx, x, y, r, rd.count, t);
       else GFX.drawPlanet(ctx, x, y, r, Object.assign({ glow: L.data.glow }, rd));
 
@@ -370,6 +403,8 @@ window.TrilokaView = (function () {
     const facts = [];
     if (lk.ruler) facts.push(["Presiding being", lk.ruler]);
     if (lk.group) facts.push(["Domain", lk.group === "upper" ? "Higher world" : lk.group === "lower" ? "Lower world" : lk.group === "earth" ? "Earthly plane" : "Foundation"]);
+    if (lk.viratPart) facts.push(["Virata-rupa", lk.viratPart]);
+    if (lk.distance) facts.push(["Distance", lk.distance]);
     return {
       eyebrow: lk.triloka ? "Triloka — one of the three worlds" : (lk.group === "upper" ? "Higher planetary system" : lk.group === "lower" ? "Lower planetary system" : "The earthly plane"),
       name: lk.name, alt: lk.altName, ref: lk.reference,
@@ -426,7 +461,7 @@ window.TrilokaView = (function () {
   return {
     id: "triloka",
     title: "The Triloka & Fourteen Worlds",
-    subtitle: "A vertical cross-section of the cosmic egg — Satyaloka above, Patala below, the earthly plane at the centre, and the wheel of luminaries rising through the heavens.",
+    subtitle: "A vertical cross-section of the cosmic egg — Satyaloka above, Patala below, the earthly plane at the centre, and the wheel of luminaries rising through the heavens. The whole is the Virata-rupa: the universe as the body of the Lord.",
     navName: "Fourteen Worlds",
     navSub: "Vertical cross-section",
     accent: "#ffb347",

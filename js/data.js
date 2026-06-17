@@ -183,6 +183,28 @@ const LOKAS = [
 ];
 
 /* ---------------------------------------------------------------------
+   Video 4 — the Virata-rupa (SB 2.1): the single universe meditated upon
+   as the gigantic body of the Lord, head (Satyaloka) to soles (Patala).
+   Plus the traditional distances of the upper lokas (SB 5.23).
+   --------------------------------------------------------------------- */
+const VIRAT_BODY = {
+  satya: "Head", tapas: "Forehead", jana: "Face", mahar: "Neck", svar: "Chest",
+  bhuvar: "Navel (outer space)", bhu: "Hips", atala: "Thighs", vitala: "Thighs",
+  sutala: "Knees", talatala: "Shanks", mahatala: "Ankles", rasatala: "Heels",
+  patala: "Soles of the feet",
+};
+const UPPER_LOKA_DISTANCE = {
+  mahar: "10,000,000 yojanas above Dhruvaloka",
+  jana: "20,000,000 yojanas above Maharloka",
+  tapas: "80,000,000 yojanas above Janaloka",
+  satya: "120,000,000 yojanas above Tapoloka",
+};
+LOKAS.forEach((l) => {
+  l.viratPart = VIRAT_BODY[l.key];
+  if (UPPER_LOKA_DISTANCE[l.key]) l.distance = UPPER_LOKA_DISTANCE[l.key];
+});
+
+/* ---------------------------------------------------------------------
    THE SEVEN DVIPAS (ISLAND-CONTINENTS) AND SEVEN OCEANS OF BHU-MANDALA
    Each successive dvipa is twice as broad as the one within it, and is
    encircled by an ocean of equal breadth made of a particular liquid.

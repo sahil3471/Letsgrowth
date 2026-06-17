@@ -36,6 +36,13 @@ const SOURCES = [
     covers:
       "The detailed Sankhya emanation: mahat-tattva to time and false ego (ahankara); the three modes dividing ego into mind and the presiding demigods (sattva), intelligence, life-air and the ten senses (rajas), and the five subtle and gross elements (tamas); how each element carries one more sense-quality than the last; the three Purusha-avatars on the three oceans; the three guna-avataras; and how each soul receives a body according to its own desire and karma.",
   },
+  {
+    id: 4,
+    title: "Original Creation — Part 4",
+    kind: "Hindi lecture (Srimad Bhagavatam, Canto 2.1)",
+    covers:
+      "The Virata-rupa — the single universe meditated upon as the gigantic body of the Lord (Satyaloka the head, the heavens His chest, outer space His navel, the lower worlds His legs down to the soles); how it differs from the Vishva-rupa of Bhagavad-gita 11; the four social orders arising from that body; the three vyahritis of the Gayatri (Bhur, Bhuvah, Svah); the Shishumara wheel of stars revolving on Dhruva; and the Vaikuntha realms (Dhruvaloka, Shvetadvipa) within the universe.",
+  },
 ];
 const sourceTag = (ids) => ids.map((i) => "Video " + i).join(", ");
 
@@ -256,6 +263,46 @@ const CONCEPTS = [
     body:
       "When the universe unfolds, every soul is given a body, senses and mind matching the desires and karma it carried at the previous dissolution — which is why no two beings are alike. Brahma is only the manager; the soul itself is the root cause of its own situation.",
   },
+  {
+    key: "virat-rupa",
+    title: "The Virata-rupa — the universe as the Lord's body",
+    ref: "SB 2.1.24-39",
+    sources: [4],
+    body:
+      "The entire single universe, within its sevenfold shell, can be meditated upon as the gigantic body of the Lord — the Virata (Vairaja) Purusha: Satyaloka is His head, the heavens His chest, outer space His navel, and the lower worlds His legs down to Patala, the soles of His feet. This differs from the Vishva-rupa Arjuna saw (BG 11), which revealed all forms at once.",
+  },
+  {
+    key: "virat-varna",
+    title: "The four orders from the cosmic body",
+    ref: "SB 2.1.37; Rig Veda 10.90.12",
+    sources: [4],
+    body:
+      "From the Virata-purusha's body arise the four social orders: the brahmanas from His mouth, the kshatriyas from His arms, the vaishyas from His thighs and waist, and the shudras from His legs and feet — each indispensable, like the limbs of one body.",
+  },
+  {
+    key: "vyahriti",
+    title: "Bhur, Bhuvah, Svah — the three vyahritis",
+    ref: "Gayatri mantra; SB 2.5",
+    sources: [4],
+    body:
+      "The three worlds of the Triloka are the three vyahritis invoked at the start of the Gayatri: Bhur (the earthly plane), Bhuvah (the intermediate sky) and Svah (the heavens) — followed by meditation on Savita, the source of creation.",
+  },
+  {
+    key: "shishumara",
+    title: "The Shishumara — the wheel of stars on Dhruva",
+    ref: "SB 5.23",
+    sources: [4],
+    body:
+      "All the planets and stars are fixed on a vast wheel that revolves around Dhruvaloka, the pivot — like a whirling firebrand that appears as a ring of light. To the great sages it appears as the Shishumara, a coiled dolphin-form, and the Lord resides within it as its heart.",
+  },
+  {
+    key: "vaikunthas-within",
+    title: "Vaikuntha within the universe",
+    ref: "SB 5.17; 8.5",
+    sources: [4],
+    body:
+      "Even within the material egg there are transcendental abodes — Dhruvaloka and Shvetadvipa, on the shore of the Ocean of Milk, where Kshirodakasayi Vishnu rests. When the demigods are in distress they come to its shore to petition the Lord.",
+  },
 ];
 
 /* ---- macro time figures referenced above ---- */
@@ -321,6 +368,14 @@ const GUNA_AVATARAS = [
   { lord: "Brahma", mode: "Rajas — passion", role: "Creation", ref: "SB 2.5", sources: [3] },
   { lord: "Vishnu", mode: "Sattva — goodness", role: "Maintenance", ref: "SB 2.5", sources: [3] },
   { lord: "Shiva", mode: "Tamas — ignorance", role: "Dissolution", ref: "SB 2.5", sources: [3] },
+];
+
+/* The four social orders mapped onto the cosmic body (Video 4, SB 2.1.37). */
+const VARNA_BODY = [
+  { part: "Mouth", order: "Brahmanas", role: "teachers & priests" },
+  { part: "Arms", order: "Kshatriyas", role: "rulers & protectors" },
+  { part: "Thighs & waist", order: "Vaishyas", role: "farmers & merchants" },
+  { part: "Legs & feet", order: "Shudras", role: "artisans & laborers" },
 ];
 
 /* helper for nicely formatted big numbers */
